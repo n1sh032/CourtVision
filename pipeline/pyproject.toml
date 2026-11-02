@@ -1,0 +1,20 @@
+[project]
+name = "courtvision"
+version = "0.1.0"
+description = "Tracking and pose pipeline for basketball clips."
+requires-python = ">=3.10"
+dependencies = ["pydantic>=2.6"]
+
+[project.optional-dependencies]
+ml = ["ultralytics>=8.3", "opencv-python>=4.9"]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[project.scripts]
+courtvision = "courtvision.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

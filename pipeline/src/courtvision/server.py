@@ -17,10 +17,17 @@ ASSETS = {
 }
 
 
-def serve(viewer: Path, port: int, model: str, device: str | None) -> None:
+def serve(
+    viewer: Path, port: int, model: str, device: str | None, contact_model: Path | None = None,
+) -> None:
     if not all((viewer / name).is_file() for name, _ in ASSETS.values()):
         raise ValueError(f"Viewer files not found in {viewer}. Run from the repository root.")
     job = Lock()
+    classifier = None
+    if contact_model is not None:
+        from .contact_model import ContactModel
+
+        classifier = ContactModel.model_validate_json(contact_model.read_bytes())
 
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
@@ -37,7 +44,7 @@ def serve(viewer: Path, port: int, model: str, device: str | None) -> None:
             self.wfile.write(content)
 
         def do_POST(self):
-            if self.path != "/detect":
+            if self.path not in {"/detect", "/detect?profile=broad"}:
                 self.send_error(404)
                 return
             origin = self.headers.get("Origin")
@@ -86,7 +93,7 @@ def serve(viewer: Path, port: int, model: str, device: str | None) -> None:
 
                     self.send_event({"status": "Loading pose model…"})
                     from . import track
-                    from .contact import detect
+                    from .contact import detect, detect_for_review
 
                     frames = []
 
@@ -98,7 +105,17 @@ def serve(viewer: Path, port: int, model: str, device: str | None) -> None:
                     result = track.run(source, model_name=model, device=device, on_frame=on_frame)
                     result.frames = frames
                     self.send_event({"status": "Finding contact candidates…"})
-                    result.contacts = detect(result)
+                    if self.path.endswith("profile=broad"):
+                        result.contacts = detect(result)
+                    elif classifier is None:
+                        result.contacts = detect_for_review(result)
+                    else:
+                        from .contact_model import features
+
+                        result.contacts = [
+                            event for event in detect(result)
+                            if classifier.accepts(features(result, event))
+                        ]
                     self.wfile.write(
                         b'{"result":' + result.model_dump_json().encode() + b"}\n"
                     )

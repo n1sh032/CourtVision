@@ -10,6 +10,10 @@ const list = byId("candidates");
 const detectButton = byId("detect");
 const clipInput = byId("clip");
 const resultsInput = byId("results");
+const profile = byId("profile");
+const labelInput = byId("label");
+const exportLabels = byId("export-labels");
+const labels = new Map();
 const localServer = location.protocol === "http:" && location.hostname === "127.0.0.1";
 const controls = [byId("play"), byId("back"), byId("forward"), seek];
 const skeleton = [[5,6],[5,7],[7,9],[6,8],[8,10],[5,11],[6,12],[11,12],[11,13],[13,15],[12,14],[14,16]];
@@ -71,6 +75,8 @@ function disableReview() {
   ready = false;
   selected = -1;
   requestedFrame = null;
+  labelInput.disabled = true;
+  labelInput.value = "";
   video.pause();
   controls.forEach(control => { control.disabled = true; });
   list.querySelectorAll("button").forEach(button => {
@@ -171,7 +177,7 @@ function renderCandidates() {
   list.replaceChildren();
   byId("candidate-count").textContent = result.contacts.length
     ? `${result.contacts.length} candidates · Select one to jump to its start.`
-    : "No candidates were detected with these settings.";
+    : "No candidates were detected with these settings. Try Broad search to review more possibilities.";
   result.contacts.forEach((event, index) => {
     const item = document.createElement("li");
     const button = document.createElement("button");
@@ -182,6 +188,8 @@ function renderCandidates() {
       list.querySelector('[aria-pressed="true"]')?.setAttribute("aria-pressed", "false");
       button.setAttribute("aria-pressed", "true");
       selected = index;
+      labelInput.disabled = false;
+      labelInput.value = labels.get(index) ?? "";
       goTo(event.start_frame);
     });
     item.append(button);
@@ -207,6 +215,8 @@ clipInput.addEventListener("change", event => {
 });
 
 function setResult(parsed) {
+  labels.clear();
+  exportLabels.disabled = true;
   result = parsed;
   videoFrames = new Map(result.frames.map(frame => [frame.index, frame]));
   renderCandidates();
@@ -218,6 +228,8 @@ resultsInput.addEventListener("change", async event => {
   ++matchVersion;
   disableReview();
   result = null;
+  labels.clear();
+  exportLabels.disabled = true;
   videoFrames.clear();
   list.replaceChildren();
   byId("candidate-count").textContent = "Load contact JSON to see candidates.";
@@ -245,14 +257,17 @@ detectButton.addEventListener("click", async () => {
   ++matchVersion;
   disableReview();
   result = null;
+  labels.clear();
+  exportLabels.disabled = true;
   videoFrames.clear();
   list.replaceChildren();
   resultsInput.value = "";
   byId("candidate-count").textContent = "Waiting for detection results.";
-  detectButton.disabled = clipInput.disabled = resultsInput.disabled = true;
+  detectButton.disabled = clipInput.disabled = resultsInput.disabled = profile.disabled = true;
   status.textContent = "Sending clip to the local detector…";
   try {
-    const response = await fetch("/detect", {
+    const endpoint = profile.value === "broad" ? "/detect?profile=broad" : "/detect";
+    const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/octet-stream" },
       body: clipFile,
@@ -289,8 +304,30 @@ detectButton.addEventListener("click", async () => {
     status.textContent = `Detection failed: ${error.message}`;
     byId("candidate-count").textContent = "No candidate results available.";
   } finally {
-    detectButton.disabled = clipInput.disabled = resultsInput.disabled = false;
+    detectButton.disabled = clipInput.disabled = resultsInput.disabled = profile.disabled = false;
   }
+});
+
+labelInput.addEventListener("change", () => {
+  if (!ready || selected < 0) return;
+  if (labelInput.value) labels.set(selected, labelInput.value);
+  else labels.delete(selected);
+  exportLabels.disabled = !labels.size;
+});
+
+exportLabels.addEventListener("click", () => {
+  if (!result || !labels.size) return;
+  const payload = {
+    version: 1,
+    result,
+    labels: Array.from(labels, ([event_index, label]) => ({ event_index, label })),
+  };
+  const url = URL.createObjectURL(new Blob([JSON.stringify(payload)], { type: "application/json" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "courtvision-review-labels.json";
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 });
 
 video.addEventListener("loadedmetadata", matchClip);

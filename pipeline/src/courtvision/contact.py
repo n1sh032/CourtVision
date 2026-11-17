@@ -30,6 +30,9 @@ BODY_SEGMENTS: tuple[tuple[int, int], ...] = (
     (14, 16),
 )
 WRISTS = (9, 10)
+TORSO = (5, 6, 11, 12)
+TORSO_SEGMENTS = ((5, 6), (5, 11), (6, 12), (11, 12))
+WRIST_ELBOW = ((9, 7), (10, 8))
 
 
 def point_segment_distance(point: Point, start: Point, end: Point) -> float:
@@ -64,20 +67,31 @@ def _usable(keypoint: Keypoint, min_conf: float) -> bool:
 
 
 def _wrist_near_body(
-    source: PlayerFrame, target: PlayerFrame, distance_ratio: float, min_conf: float
+    source: PlayerFrame, target: PlayerFrame, distance_ratio: float, min_conf: float,
+    conservative: bool = False,
 ) -> bool:
     threshold = distance_ratio * (target.bbox[3] - target.bbox[1])
-    for wrist_index in WRISTS:
+    segments = TORSO_SEGMENTS if conservative else BODY_SEGMENTS
+    for wrist_index, elbow_index in WRIST_ELBOW:
         wrist = source.keypoints[wrist_index]
-        if not _usable(wrist, min_conf):
+        if not _usable(wrist, min_conf) or (
+            conservative and not _usable(source.keypoints[elbow_index], min_conf)
+        ):
             continue
-        for start_index, end_index in BODY_SEGMENTS:
+        for start_index, end_index in segments:
             start, end = target.keypoints[start_index], target.keypoints[end_index]
             if not (_usable(start, min_conf) and _usable(end, min_conf)):
                 continue
             if point_segment_distance(wrist[:2], start[:2], end[:2]) <= threshold:
                 return True
     return False
+
+
+def _reviewable_pair(a: PlayerFrame, b: PlayerFrame, min_conf: float) -> bool:
+    heights = [p.bbox[3] - p.bbox[1] for p in (a, b)]
+    if min(heights) / max(heights) < 0.6:
+        return False
+    return all(sum(_usable(p.keypoints[i], min_conf) for i in TORSO) >= 3 for p in (a, b))
 
 
 @dataclass
@@ -98,6 +112,8 @@ def detect(
     min_conf: float = 0.3,
     min_hit_frames: int = 3,
     max_gap_frames: int = 2,
+    *,
+    conservative: bool = False,
 ) -> list[ContactEvent]:
     """Return candidates without modifying the input poses or existing contacts.
 
@@ -144,8 +160,10 @@ def detect(
         for a, b in combinations(players, 2):
             if a.track_id == b.track_id or not _boxes_touch(a, b):
                 continue
-            if _wrist_near_body(a, b, distance_ratio, min_conf) or _wrist_near_body(
-                b, a, distance_ratio, min_conf
+            if conservative and not _reviewable_pair(a, b, min_conf):
+                continue
+            if _wrist_near_body(a, b, distance_ratio, min_conf, conservative) or _wrist_near_body(
+                b, a, distance_ratio, min_conf, conservative,
             ):
                 hits.add((min(a.track_id, b.track_id), max(a.track_id, b.track_id)))
 
@@ -165,3 +183,16 @@ def detect(
     for pair in list(active):
         finish(pair)
     return sorted(events, key=lambda event: (event.start_frame, event.track_ids))
+
+
+def detect_for_review(result: ClipResult) -> list[ContactEvent]:
+    """Favor visible, sustained torso candidates in the browser workflow."""
+    fps = result.video.fps
+    return detect(
+        result,
+        distance_ratio=0.05,
+        min_conf=0.45,
+        min_hit_frames=max(3, math.ceil(0.2 * fps)),
+        max_gap_frames=max(0, round(0.035 * fps)),
+        conservative=True,
+    )

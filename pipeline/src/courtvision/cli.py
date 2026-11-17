@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -35,20 +36,36 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--model", default="yolo11n-pose.pt")
     p.add_argument("--device", default=None)
     p.add_argument("--viewer-dir", type=Path, default=Path("viewer"))
+    p.add_argument("--contact-model", type=Path, help="trained event classifier JSON")
+
+    p = sub.add_parser("train-contacts", help="train an event classifier from viewer exports")
+    p.add_argument("reviews", type=Path, nargs="+")
+    p.add_argument("-o", "--out", type=Path, required=True)
 
     args = ap.parse_args(argv)
     if args.cmd == "serve":
         from .server import serve
 
         try:
-            serve(args.viewer_dir, args.port, args.model, args.device)
+            serve(args.viewer_dir, args.port, args.model, args.device, args.contact_model)
         except (OSError, ValueError) as exc:
             ap.error(str(exc))
         return
     if args.out.exists() or args.out.is_symlink():
         ap.error(f"output already exists: {args.out}")
 
-    if args.cmd == "process":
+    if args.cmd == "train-contacts":
+        from .contact_model import train
+
+        try:
+            classifier, report = train(args.reviews)
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            with args.out.open("x", encoding="utf-8") as output:
+                output.write(classifier.model_dump_json(indent=2))
+        except (OSError, ValueError) as exc:
+            ap.error(str(exc))
+        print("Held-out clip results on labeled candidates:", json.dumps(report))
+    elif args.cmd == "process":
         from . import track
 
         detections = 0

@@ -22,6 +22,33 @@ detection, reports progress, and opens the results in the same viewer. The
 server binds to your computer only and accepts clips up to 200 MiB. The pose
 weights may be downloaded on the first run. Press Ctrl+C to stop the server.
 
+### Reduce false positives and train a candidate filter
+
+Browser detection defaults to **Stricter review**. It looks for a confident
+wrist and elbow near the torso of a similarly sized, visible track for about
+0.2 seconds. This can filter some walk-bys and occlusions, and can also drop
+real brief contacts or contacts away from the torso. **Broad search** keeps
+the original rules and is useful for gathering a wider range of examples.
+
+Run Broad search on several different clips. Select each candidate and label
+it **Visible contact**, **No contact**, or **Unclear or occluded**. Export
+labeled examples for each clip. Keep exports local if they contain private
+pose data. Use both labels across multiple clips. Unclear examples are
+excluded from training.
+
+```powershell
+python -m pip install -e "./pipeline[ml,train]"
+courtvision train-contacts clip-a-labels.json clip-b-labels.json -o contact-model.json
+courtvision serve --contact-model contact-model.json
+```
+
+The trainer evaluates on held-out clips and writes a local classifier. When
+the server is started with that model, **Stricter review** uses it to filter
+Broad search candidates. Broad search itself remains available for labeling.
+The report covers reviewed candidates only. It does not measure contacts the
+initial candidate finder never proposed. Keep clips from the same play
+together when collecting data so near-duplicates do not inflate results.
+
 ### Terminal commands and saved results
 
 ```powershell

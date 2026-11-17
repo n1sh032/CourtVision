@@ -15,3 +15,11 @@
 **Run feedback:** Added frame progress, processing speed, and a rough remaining-time estimate after a long CPU run appeared unresponsive. JSON is written after tracking finishes.
 
 **Observations:** The short sample processed successfully. Visual review found decent tracking, with skeleton jitter during falls and occasional ID changes. Quality has not been quantitatively evaluated.
+
+## Steps 3–4: Contact candidates and review
+**Built:** The contacts command groups nearby wrists and body segments into
+candidate intervals. The local viewer links candidate intervals to the source
+clip and highlights the tracked people during review.
+
+**Boundary:** Candidates indicate 2D proximity. Viewer frame stepping assumes
+a constant frame rate. Detection accuracy needs human-labeled clips.

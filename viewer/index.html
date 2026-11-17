@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CourtVision Review</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="viewer.js" defer></script>
+</head>
+<body>
+  <main>
+    <h1>CourtVision Review</h1>
+    <p>Review candidate contact moments. Candidates are not foul decisions.</p>
+    <div class="inputs">
+      <label>Original clip <input id="clip" type="file" accept="video/*"></label>
+      <label>Contact results <input id="results" type="file" accept=".json,application/json"></label>
+    </div>
+    <p id="status" role="status">Choose a clip and its contact JSON.</p>
+    <div class="workspace">
+      <section aria-label="Video review">
+        <div class="stage">
+          <video id="video" playsinline preload="metadata" aria-label="Basketball clip"></video>
+          <canvas id="overlay" aria-hidden="true"></canvas>
+        </div>
+        <div class="controls">
+          <button id="play" disabled>Play</button>
+          <button id="back" disabled>Previous frame</button>
+          <button id="forward" disabled>Next frame</button>
+          <label><input id="show-pose" type="checkbox" checked> Show poses</label>
+        </div>
+        <label class="timeline">Timeline <input id="seek" type="range" min="0" max="0" value="0" disabled></label>
+        <output id="frame">Frame —</output>
+      </section>
+      <section aria-labelledby="candidate-title">
+        <h2 id="candidate-title">Contact candidates</h2>
+        <p id="candidate-count">Load contact JSON to see candidates.</p>
+        <ol id="candidates"></ol>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

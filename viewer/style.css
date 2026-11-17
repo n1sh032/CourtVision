@@ -1,0 +1,22 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #11171b; color: #edf6f4; font: 1rem system-ui, sans-serif; }
+main { max-width: 75rem; margin: auto; padding: 1.5rem; }
+h1 { margin: 0; }
+.inputs, .controls { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1rem; }
+.inputs label { display: grid; gap: .4rem; }
+.workspace { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 1.25rem; }
+.stage { position: relative; background: #080b0d; }
+video, canvas { display: block; width: 100%; }
+video { min-height: 8rem; }
+canvas { position: absolute; inset: 0; height: 100%; pointer-events: none; }
+.controls { padding-block: .75rem; }
+.timeline { display: flex; gap: .75rem; align-items: center; }
+.timeline input { flex: 1; min-width: 0; }
+button { font: inherit; color: inherit; background: #223138; border: 1px solid #57737a; border-radius: .3rem; padding: .5rem .7rem; cursor: pointer; }
+button:disabled { opacity: .45; cursor: default; }
+button:focus-visible, input:focus-visible { outline: 3px solid #f9b962; outline-offset: 3px; }
+#candidates { max-height: 28rem; overflow-y: auto; margin: 0; padding-left: 1.8rem; }
+#candidates li { margin-bottom: .5rem; }
+#candidates button { width: 100%; text-align: left; }
+#candidates button[aria-pressed="true"] { border-color: #f9b962; color: #f9b962; }
+@media (max-width: 48rem) { .workspace { grid-template-columns: 1fr; } }

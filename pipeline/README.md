@@ -1,84 +1,57 @@
 # CourtVision pipeline
 
-Run these PowerShell commands from the repository root. They use the existing
-venv directly, so activation is optional.
+The Python package processes clips, exports poses, finds contact candidates, renders overlays and serves the local viewer. The [project README](../README.md) covers installation and browser review.
+
+## CLI
+
+From the repository root, create a virtual environment and install the package. The base package can run contact analysis on existing pose JSON. Use the `ml` extra for video decoding, pose inference and overlays.
 
 ```powershell
-.\pipeline\.venv\Scripts\python.exe -m courtvision.cli contacts data\results\sample.json -o data\results\sample_contacts.json
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -e "./pipeline[ml,train,dev]"
+$cv = ".\.venv\Scripts\courtvision.exe"
+& $cv --help
+& $cv process clip.mp4 -o pose.json --device cpu
+& $cv contacts pose.json -o contacts.json
+& $cv overlay clip.mp4 contacts.json -o annotated.mp4
 ```
 
-Expected output: `N candidate contact events; wrote data\results\sample_contacts.json`.
-The output contains the original video metadata and poses, plus a `contacts`
-array. This command reads saved JSON and does not load ML packages, decode the
-video, or rerun pose inference. It can also be used as `courtvision contacts`
-when the venv is activated.
+Use a new output filename on each run. For `process` and `serve`, `--model` accepts a path to existing YOLO weights, and `--device cpu` forces CPU inference. The `contacts` command reads saved poses without running inference again. Overlay draws track IDs, bounding boxes and skeletons onto a matching video. The browser viewer highlights the selected candidate's tracks.
 
-## Geometry and tuning
+## Candidate detection
 
-A frame contributes one hit for a pair of different track IDs when:
+The CLI uses the same rules as **Broad search**. A frame counts for a track pair if their boxes overlap or touch, and a wrist from either person is near a segment of the other person's body. The wrist and both segment endpoints must exceed the confidence threshold. The distance threshold scales with the height of the target person's bounding box.
 
-1. Their bounding boxes overlap or touch, including a shared edge or corner.
-2. Either player's wrist is within `distance_ratio * target_box_height` pixels
-   of a body segment of the other player.
-3. The wrist and both segment endpoints have confidence strictly greater than
-   `min_conf`. Nonfinite coordinates/confidences and invalid boxes are ignored.
-
-Body segments use COCO-17 shoulders, elbows, wrists, hips, knees, and ankles:
-the shoulder and hip crossbars, both sides of the torso, upper/lower arms, and
-upper/lower legs. Distance is to the finite segment, including its endpoints.
-Both wrists and both directions are checked, but each pair has only one hit per
-frame. Distance uses the other player's box height, so the two directions may
-have different pixel thresholds.
-
-| CLI option | Default | Meaning |
+| Option | Default | Meaning |
 | --- | --- | --- |
-| `--distance-ratio` | `0.08` | Maximum distance as a fraction of the target's box height |
-| `--min-conf` | `0.3` | Confidence must be strictly above this value |
-| `--min-hit-frames` | `3` | Minimum number of actual hit frames per event |
-| `--max-gap-frames` | `2` | Maximum missing/non-hit frames between hits |
+| `--distance-ratio` | `0.08` | Maximum distance as a fraction of the target box height |
+| `--min-conf` | `0.3` | Minimum confidence, exceeded by each keypoint |
+| `--min-hit-frames` | `3` | Actual hits required to emit an event |
+| `--max-gap-frames` | `2` | Missing or non-hit frames allowed between hits |
 
-For example, hits at frames 10, 13, and 14 merge with the defaults: the two
-missing frames between 10 and 13 are tolerated. The event has three hit frames
-and inclusive endpoints 10 and 14. Trailing gaps do not extend its end. A single
-hit is discarded even if surrounded by tolerated gaps. Missing frame indices
-count toward gaps; gap settings use frames, not seconds. Frames must have
-strictly increasing nonnegative indices and nondecreasing finite times.
-
-Retune without running the model again:
+Hits at frames 10, 13 and 14 produce one event with three hits and inclusive endpoints 10–14. Frames 11 and 12 bridge the gap without counting as hits. Both directions are checked and a pair counts at most once per frame.
 
 ```powershell
-.\pipeline\.venv\Scripts\python.exe -m courtvision.cli contacts data\results\sample.json -o data\results\sample_contacts_strict.json --distance-ratio 0.05 --min-conf 0.5 --min-hit-frames 4 --max-gap-frames 1
+& $cv contacts pose.json -o contacts-retuned.json --distance-ratio 0.05 --min-conf 0.5 --min-hit-frames 4 --max-gap-frames 1
 ```
 
-## JSON contract
+Retuning replaces the candidate array in the output while preserving the poses. The browser's stricter profile also checks torso visibility, elbow confidence, and relative track size, so CLI thresholds alone do not reproduce that profile.
 
-`ContactEvent` stores `track_ids` (two distinct IDs in ascending order),
-`start_frame`, `end_frame`, `start_t`, `end_t`, and `hit_frames`. Frame/time
-endpoints refer to the first and last actual hits; times come from saved frames.
-Events are sorted by start frame, then track pair. Use a new output path when retuning. Retuning replaces the
-`contacts` array rather than appending duplicate results.
+## Result format
 
-The optional `contacts` field defaults to `[]`, so existing Step 2 JSON can still
-be read. This additive change retains schema version `0.1.0` and does not change
-the existing pose fields.
+- `video` contains source name, frame rate, dimensions and frame count. Fresh exports include a SHA-256 hash to identify the exact input.
+- `frames` contains frame indices, timestamps in seconds, track IDs, boxes and 17 COCO keypoints in source-video pixels.
+- `contacts` contains track pairs, frame and time intervals, and hit counts. Frame endpoints are inclusive.
+- Review exports contain a `result` and labels keyed by zero-based candidate index. The classifier uses event duration, hit density, wrist-distance statistics and relative box height. It does not change YOLO's pose model.
 
-## Limitations
+## Working proof and checks
 
-These are 2D proximity candidates, not verified physical contacts or foul
-decisions. Perspective can make separated players appear close. Pose jitter,
-occlusion, and changing box height can cause false hits or missed contacts.
-Confidence filtering and flicker removal help suppress noise but do not fix
-pose estimates. ID changes split a player's history and can fragment events;
-the detector does not reconnect IDs or detect camera cuts. It checks wrists
-against body segments, so other kinds of contact can be missed. Defaults are
-starting values; precision and recall have not been measured.
-
-## Tests
+A previous run passed **111 pipeline tests** with `train` and `dev` dependencies available. The suite covers geometry, event grouping, CLI validation and synthetic training. The real CPU and browser smoke check is summarized in the [main README](../README.md). For your own video, inspect the printed frame and candidate counts and open the matching clip and `contacts.json` in the viewer. A count of zero is valid.
 
 ```powershell
-.\pipeline\.venv\Scripts\python.exe -m pytest pipeline\tests -q
-.\pipeline\.venv\Scripts\python.exe -m ruff check pipeline
+.\.venv\Scripts\python.exe -m pytest -q pipeline/tests
+.\.venv\Scripts\python.exe -m ruff check pipeline
+node --check viewer/viewer.js
 ```
 
-Tests use synthetic keypoints and saved JSON. They require the `dev` extra but
-do not need video footage, model weights, or the `ml` extra.
+Node.js is only needed for the JavaScript syntax check. See the [main README](../README.md#limits) for detection and codec limitations.

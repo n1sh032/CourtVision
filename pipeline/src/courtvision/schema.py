@@ -35,16 +35,38 @@ class Frame(BaseModel):
     players: list[PlayerFrame]
 
 
+class ContactEvent(BaseModel):
+    track_ids: tuple[int, int]
+    start_frame: int = Field(ge=0)
+    end_frame: int = Field(ge=0)
+    start_t: FiniteFloat = Field(ge=0)
+    end_t: FiniteFloat = Field(ge=0)
+    hit_frames: int = Field(ge=1)
+
+    @model_validator(mode="after")
+    def validate_interval(self) -> ContactEvent:
+        if self.track_ids[0] >= self.track_ids[1]:
+            raise ValueError("track_ids must be distinct and in ascending order")
+        if self.end_frame < self.start_frame or self.end_t < self.start_t:
+            raise ValueError("event end must not precede its start")
+        if self.hit_frames > self.end_frame - self.start_frame + 1:
+            raise ValueError("hit_frames cannot exceed the event's frame span")
+        return self
+
+
 class ClipResult(BaseModel):
     schema_version: Literal["0.1.0"] = SCHEMA_VERSION
     video: VideoMeta
     frames: list[Frame]
+    contacts: list[ContactEvent] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def validate_order(self):
         previous_time = 0.0
-        for index, frame in enumerate(self.frames):
-            if frame.index != index or frame.t < previous_time:
-                raise ValueError("Frame indices must be consecutive and times nondecreasing")
+        previous_index = -1
+        for frame in self.frames:
+            if frame.index <= previous_index or frame.t < previous_time:
+                raise ValueError("Frame indices must increase and times must be nondecreasing")
+            previous_index = frame.index
             previous_time = frame.t
         return self

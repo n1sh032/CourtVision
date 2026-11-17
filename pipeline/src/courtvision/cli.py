@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from .schema import Frame
+from .schema import ClipResult, Frame
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -21,6 +21,14 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("video", type=Path)
     p.add_argument("json", type=Path)
     p.add_argument("-o", "--out", type=Path, required=True)
+
+    p = sub.add_parser("contacts", help="find contact candidates in saved pose JSON")
+    p.add_argument("json", type=Path)
+    p.add_argument("-o", "--out", type=Path, required=True)
+    p.add_argument("--distance-ratio", type=float, default=0.08)
+    p.add_argument("--min-conf", type=float, default=0.3)
+    p.add_argument("--min-hit-frames", type=int, default=3)
+    p.add_argument("--max-gap-frames", type=int, default=2)
 
     args = ap.parse_args(argv)
     if args.out.exists() or args.out.is_symlink():
@@ -55,7 +63,7 @@ def main(argv: list[str] | None = None) -> None:
         except (OSError, ValueError) as exc:
             ap.error(str(exc))
         print(f"{result.video.n_frames} frames, {detections} player detections, {len(ids)} unique track IDs")
-    else:
+    elif args.cmd == "overlay":
         from . import overlay
         from .pose_reader import read_frames, read_metadata
         from ijson import JSONError
@@ -76,6 +84,26 @@ def main(argv: list[str] | None = None) -> None:
         except (OSError, ValueError, JSONError) as exc:
             ap.error(str(exc))
         print(f"wrote {args.out}")
+    else:
+        from .contact import detect
+
+        try:
+            result = ClipResult.model_validate_json(args.json.read_bytes())
+            result.contacts = detect(
+                result,
+                distance_ratio=args.distance_ratio,
+                min_conf=args.min_conf,
+                min_hit_frames=args.min_hit_frames,
+                max_gap_frames=args.max_gap_frames,
+            )
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            with TemporaryDirectory(dir=args.out.parent) as folder:
+                temp = Path(folder) / "contacts.json"
+                temp.write_text(result.model_dump_json(), encoding="utf-8")
+                temp.rename(args.out)
+        except (OSError, ValueError) as exc:
+            ap.error(str(exc))
+        print(f"{len(result.contacts)} candidate contact events; wrote {args.out}")
 
 
 if __name__ == "__main__":

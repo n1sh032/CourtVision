@@ -22,6 +22,7 @@ def run(
     video_path = Path(video_path)
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
+        cap.release()
         raise FileNotFoundError(f"Cannot open video: {video_path}")
     fps = cap.get(cv2.CAP_PROP_FPS)
     if not math.isfinite(fps) or fps <= 0:
@@ -30,6 +31,8 @@ def run(
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     cap.release()
+    if width <= 0 or height <= 0:
+        raise ValueError(f"Invalid video dimensions: {video_path}")
 
     print(
         f"Video: {n_frames} frames, {width}x{height}, {fps:.2f} FPS "
@@ -85,9 +88,11 @@ def run(
             print(progress, file=sys.stderr, flush=True)
             last_report = now
 
+    if not frames:
+        raise ValueError(f"No video frames decoded: {video_path}")
     return ClipResult(
         video=VideoMeta(
-            source=video_path.name, fps=fps, width=width, height=height, n_frames=n_frames
+            source=video_path.name, fps=fps, width=width, height=height, n_frames=len(frames)
         ),
         frames=frames,
     )

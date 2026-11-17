@@ -1,11 +1,10 @@
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from .schema import ClipResult
+from .schema import ClipResult, Frame
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -30,16 +29,32 @@ def main(argv: list[str] | None = None) -> None:
     if args.cmd == "process":
         from . import track
 
+        detections = 0
+        ids: set[int] = set()
         try:
-            result = track.run(args.video, model_name=args.model, device=args.device)
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            with TemporaryDirectory(dir=args.out.parent) as folder:
+                temp = Path(folder) / "pose.json"
+                with temp.open("w", encoding="utf-8") as output:
+                    output.write('{"frames":[')
+
+                    def write_frame(frame: Frame) -> None:
+                        nonlocal detections
+                        if frame.index:
+                            output.write(",")
+                        output.write(frame.model_dump_json())
+                        detections += len(frame.players)
+                        ids.update(player.track_id for player in frame.players)
+
+                    result = track.run(
+                        args.video, model_name=args.model, device=args.device, on_frame=write_frame,
+                    )
+                    metadata = result.model_dump_json(exclude={"frames"})
+                    output.write("]," + metadata[1:])
+                temp.rename(args.out)
         except (OSError, ValueError) as exc:
             ap.error(str(exc))
-        print(f"Writing {args.out}...", file=sys.stderr, flush=True)
-        args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(result.model_dump_json())
-        n = sum(len(f.players) for f in result.frames)
-        ids = {p.track_id for f in result.frames for p in f.players}
-        print(f"{len(result.frames)} frames, {n} player detections, {len(ids)} unique track IDs")
+        print(f"{result.video.n_frames} frames, {detections} player detections, {len(ids)} unique track IDs")
     else:
         from . import overlay
 

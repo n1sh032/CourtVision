@@ -4,6 +4,7 @@ from __future__ import annotations
 import math
 import sys
 import time
+from collections.abc import Callable
 from pathlib import Path
 
 from .schema import ClipResult, Frame, PlayerFrame, VideoMeta
@@ -16,6 +17,7 @@ def run(
     conf: float = 0.25,
     tracker: str = "bytetrack.yaml",
     device: str | None = None,
+    on_frame: Callable[[Frame], None] | None = None,
 ) -> ClipResult:
     import cv2
     from ultralytics import YOLO
@@ -46,6 +48,7 @@ def run(
     )
     model = YOLO(model_name)
     frames: list[Frame] = []
+    processed = 0
     started = time.perf_counter()
     last_report = started
     print("Starting tracking; waiting for the first frame...", file=sys.stderr, flush=True)
@@ -73,7 +76,11 @@ def run(
                         keypoints=[tuple(p) for p in kp],
                     )
                 )
-        frames.append(Frame(index=i, t=i / fps, players=players))
+        frame = Frame(index=i, t=i / fps, players=players)
+        if on_frame is None:
+            frames.append(frame)
+        else:
+            on_frame(frame)
         now = time.perf_counter()
         processed = i + 1
         if processed == 1 or now - last_report >= 5 or processed == n_frames:
@@ -92,12 +99,12 @@ def run(
             print(progress, file=sys.stderr, flush=True)
             last_report = now
 
-    if not frames:
+    if not processed:
         raise ValueError(f"No video frames decoded: {video_path}")
     return ClipResult(
         video=VideoMeta(
             source=video_path.name, source_sha256=source_sha256,
-            fps=fps, width=width, height=height, n_frames=len(frames)
+            fps=fps, width=width, height=height, n_frames=processed
         ),
         frames=frames,
     )

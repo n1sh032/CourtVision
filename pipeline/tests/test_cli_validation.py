@@ -1,6 +1,40 @@
 import pytest
 
 from courtvision.cli import main
+from courtvision.schema import ClipResult, Frame, VideoMeta
+
+
+def test_process_streams_readable_pose_json(tmp_path, monkeypatch):
+    from courtvision import track
+
+    def run(video, *, model_name, device, on_frame):
+        for index in range(2):
+            on_frame(Frame(index=index, t=index / 30, players=[]))
+        return ClipResult(
+            video=VideoMeta(source=video.name, fps=30, width=640, height=480, n_frames=2),
+            frames=[],
+        )
+
+    monkeypatch.setattr(track, "run", run)
+    output = tmp_path / "pose.json"
+    main(["process", "input.mp4", "-o", str(output)])
+    result = ClipResult.model_validate_json(output.read_bytes())
+    assert [frame.index for frame in result.frames] == [0, 1]
+    assert result.video.n_frames == 2
+
+
+def test_failed_process_leaves_no_output(tmp_path, monkeypatch):
+    from courtvision import track
+
+    def run(*args, on_frame, **kwargs):
+        on_frame(Frame(index=0, t=0, players=[]))
+        raise ValueError("failed to decode video")
+
+    monkeypatch.setattr(track, "run", run)
+    output = tmp_path / "pose.json"
+    with pytest.raises(SystemExit):
+        main(["process", "input.mp4", "-o", str(output)])
+    assert not output.exists()
 
 
 def test_existing_output_is_preserved(tmp_path):

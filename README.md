@@ -15,8 +15,8 @@ the contact detection branch. Its output consists of candidate events, not foul
 decisions.
 
 The tracker can change IDs when players overlap or leave the frame, and pose
-estimates can jitter or miss joints. Use short clips because processing and
-overlay currently keep the full pose result in memory.
+estimates can jitter or miss joints. The processing command streams pose
+records to JSON. Overlay still loads the full pose result into memory.
 
 See the [development log](docs/devlog.md). CourtVision does not redistribute NBA
 footage and is independent of the NBA and its teams.

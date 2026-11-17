@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import argparse
+import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from .schema import Frame
+from .schema import ClipResult, Frame
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -22,11 +23,49 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("json", type=Path)
     p.add_argument("-o", "--out", type=Path, required=True)
 
+    p = sub.add_parser("contacts", help="find contact candidates in saved pose JSON")
+    p.add_argument("json", type=Path)
+    p.add_argument("-o", "--out", type=Path, required=True)
+    p.add_argument("--distance-ratio", type=float, default=0.08)
+    p.add_argument("--min-conf", type=float, default=0.3)
+    p.add_argument("--min-hit-frames", type=int, default=3)
+    p.add_argument("--max-gap-frames", type=int, default=2)
+
+    p = sub.add_parser("serve", help="run detection and review from a local browser")
+    p.add_argument("--port", type=int, default=8000)
+    p.add_argument("--model", default="yolo11n-pose.pt")
+    p.add_argument("--device", default=None)
+    p.add_argument("--viewer-dir", type=Path, default=Path("viewer"))
+    p.add_argument("--contact-model", type=Path, help="trained event classifier JSON")
+
+    p = sub.add_parser("train-contacts", help="train an event classifier from viewer exports")
+    p.add_argument("reviews", type=Path, nargs="+")
+    p.add_argument("-o", "--out", type=Path, required=True)
+
     args = ap.parse_args(argv)
+    if args.cmd == "serve":
+        from .server import serve
+
+        try:
+            serve(args.viewer_dir, args.port, args.model, args.device, args.contact_model)
+        except (OSError, ValueError) as exc:
+            ap.error(str(exc))
+        return
     if args.out.exists() or args.out.is_symlink():
         ap.error(f"output already exists: {args.out}")
 
-    if args.cmd == "process":
+    if args.cmd == "train-contacts":
+        from .contact_model import train
+
+        try:
+            classifier, report = train(args.reviews)
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            with args.out.open("x", encoding="utf-8") as output:
+                output.write(classifier.model_dump_json(indent=2))
+        except (OSError, ValueError) as exc:
+            ap.error(str(exc))
+        print("Held-out clip results on labeled candidates:", json.dumps(report))
+    elif args.cmd == "process":
         from . import track
 
         detections = 0
@@ -55,10 +94,11 @@ def main(argv: list[str] | None = None) -> None:
         except (OSError, ValueError) as exc:
             ap.error(str(exc))
         print(f"{result.video.n_frames} frames, {detections} player detections, {len(ids)} unique track IDs")
-    else:
+    elif args.cmd == "overlay":
+        from ijson import JSONError
+
         from . import overlay
         from .pose_reader import read_frames, read_metadata
-        from ijson import JSONError
 
         if args.out.suffix.lower() != ".mp4":
             ap.error("overlay output must end in .mp4")
@@ -76,6 +116,26 @@ def main(argv: list[str] | None = None) -> None:
         except (OSError, ValueError, JSONError) as exc:
             ap.error(str(exc))
         print(f"wrote {args.out}")
+    else:
+        from .contact import detect
+
+        try:
+            result = ClipResult.model_validate_json(args.json.read_bytes())
+            result.contacts = detect(
+                result,
+                distance_ratio=args.distance_ratio,
+                min_conf=args.min_conf,
+                min_hit_frames=args.min_hit_frames,
+                max_gap_frames=args.max_gap_frames,
+            )
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            with TemporaryDirectory(dir=args.out.parent) as folder:
+                temp = Path(folder) / "contacts.json"
+                temp.write_text(result.model_dump_json(), encoding="utf-8")
+                temp.rename(args.out)
+        except (OSError, ValueError) as exc:
+            ap.error(str(exc))
+        print(f"{len(result.contacts)} candidate contact events; wrote {args.out}")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,4 @@
 import pytest
-
 from courtvision.cli import main
 from courtvision.schema import ClipResult, Frame, VideoMeta
 

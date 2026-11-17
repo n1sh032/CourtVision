@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CourtVision Review</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="viewer.js" defer></script>
+</head>
+<body>
+  <main>
+    <h1>CourtVision Review</h1>
+    <p>Review candidate contact moments. Candidates are not foul decisions.</p>
+    <div class="inputs">
+      <label>Original clip <input id="clip" type="file" accept="video/*"></label>
+      <button id="detect" disabled>Run Detection</button>
+      <label>Detection mode
+        <select id="profile">
+          <option value="review">Stricter review</option>
+          <option value="broad">Broad search</option>
+        </select>
+      </label>
+      <label>Or open saved results <input id="results" type="file" accept=".json,application/json"></label>
+    </div>
+    <p id="status" role="status">Choose an H.264 MP4 to get started.</p>
+    <div class="workspace">
+      <section aria-label="Video review">
+        <div class="stage">
+          <video id="video" playsinline preload="metadata" aria-label="Basketball clip"></video>
+          <canvas id="overlay" aria-hidden="true"></canvas>
+        </div>
+        <div class="controls">
+          <button id="play" disabled>Play</button>
+          <button id="back" disabled>Previous frame</button>
+          <button id="forward" disabled>Next frame</button>
+          <label><input id="show-pose" type="checkbox" checked> Show poses</label>
+        </div>
+        <label class="timeline">Timeline <input id="seek" type="range" min="0" max="0" value="0" disabled></label>
+        <output id="frame">Frame —</output>
+      </section>
+      <section aria-labelledby="candidate-title">
+        <h2 id="candidate-title">Contact candidates</h2>
+        <p id="candidate-count">Load contact JSON to see candidates.</p>
+        <ol id="candidates"></ol>
+        <div class="controls">
+          <label>Selected candidate
+            <select id="label" disabled>
+              <option value="">Not reviewed</option>
+              <option value="contact">Visible contact</option>
+              <option value="no_contact">No contact</option>
+              <option value="unclear">Unclear or occluded</option>
+            </select>
+          </label>
+          <button id="export-labels" disabled>Export labeled examples</button>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>

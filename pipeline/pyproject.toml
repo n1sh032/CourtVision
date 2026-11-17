@@ -7,6 +7,7 @@ dependencies = ["pydantic>=2.6", "ijson>=3.2"]
 
 [project.optional-dependencies]
 ml = ["ultralytics>=8.3", "opencv-python>=4.9"]
+train = ["scikit-learn>=1.5"]
 dev = ["pytest>=8", "ruff>=0.5"]
 
 [project.scripts]

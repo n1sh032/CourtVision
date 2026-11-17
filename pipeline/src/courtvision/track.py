@@ -7,6 +7,7 @@ import time
 from pathlib import Path
 
 from .schema import ClipResult, Frame, PlayerFrame, VideoMeta
+from .source import fingerprint
 
 
 def run(
@@ -20,6 +21,9 @@ def run(
     from ultralytics import YOLO
 
     video_path = Path(video_path)
+    if not video_path.is_file():
+        raise FileNotFoundError(f"Video must be a local file: {video_path}")
+    source_sha256 = fingerprint(video_path)
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
         cap.release()
@@ -92,7 +96,8 @@ def run(
         raise ValueError(f"No video frames decoded: {video_path}")
     return ClipResult(
         video=VideoMeta(
-            source=video_path.name, fps=fps, width=width, height=height, n_frames=len(frames)
+            source=video_path.name, source_sha256=source_sha256,
+            fps=fps, width=width, height=height, n_frames=len(frames)
         ),
         frames=frames,
     )

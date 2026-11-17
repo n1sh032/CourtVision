@@ -5,6 +5,7 @@ import math
 from pathlib import Path
 
 from .schema import ClipResult
+from .source import fingerprint
 
 SKELETON = [
     (5, 6), (5, 7), (7, 9), (6, 8), (8, 10), (5, 11), (6, 12), (11, 12),
@@ -19,6 +20,8 @@ def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> 
     if not video_path.is_file() or out_path.exists() or out_path.suffix.lower() != ".mp4":
         raise ValueError("Overlay needs an existing input file and a new .mp4 output")
     v = result.video
+    if v.source_sha256 and fingerprint(video_path) != v.source_sha256:
+        raise ValueError("Input video does not match the pose JSON source")
     if not math.isfinite(v.fps) or v.fps <= 0 or min(v.width, v.height) <= 0:
         raise ValueError("Invalid video metadata in pose JSON")
     out_path.parent.mkdir(parents=True, exist_ok=True)

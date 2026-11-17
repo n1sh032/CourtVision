@@ -13,12 +13,24 @@ commands from the repository root with a clip you have permission to review:
 
 ```powershell
 python -m pip install -e "./pipeline[ml]"
+courtvision serve
+```
+
+Open the printed URL, normally `http://127.0.0.1:8000`, choose the clip, and
+click **Run Detection**. The local service runs pose estimation and contact
+detection, reports progress, and opens the results in the same viewer. The
+server binds to your computer only and accepts clips up to 200 MiB. The pose
+weights may be downloaded on the first run. Press Ctrl+C to stop the server.
+
+### Terminal commands and saved results
+
+```powershell
 courtvision process clip.mp4 -o pose.json
 courtvision contacts pose.json -o contacts.json
 courtvision overlay clip.mp4 pose.json -o annotated.mp4
 ```
 
-The overlay command is optional. To review candidates, open
+The overlay command is optional. To review saved results, open
 [viewer/index.html](viewer/index.html) in a recent browser. Select the **original
 clip** and `contacts.json`. Select a candidate to jump to its first frame and
 highlight the two track IDs. Use Previous frame, Next frame, or the timeline to

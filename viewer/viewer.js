@@ -7,6 +7,10 @@ const drawing = canvas.getContext("2d");
 const seek = byId("seek");
 const status = byId("status");
 const list = byId("candidates");
+const detectButton = byId("detect");
+const clipInput = byId("clip");
+const resultsInput = byId("results");
+const localServer = location.protocol === "http:" && location.hostname === "127.0.0.1";
 const controls = [byId("play"), byId("back"), byId("forward"), seek];
 const skeleton = [[5,6],[5,7],[7,9],[6,8],[8,10],[5,11],[6,12],[11,12],[11,13],[13,15],[12,14],[14,16]];
 
@@ -81,7 +85,9 @@ async function matchClip() {
   const version = ++matchVersion;
   disableReview();
   if (!clipFile || !result || video.readyState < 1) {
-    status.textContent = "Choose a clip and its contact JSON.";
+    status.textContent = clipFile && localServer
+      ? "Run Detection or open saved results."
+      : "Choose a clip and its contact JSON, or start the CourtVision server to run detection.";
     return;
   }
   const meta = result.video;
@@ -183,11 +189,12 @@ function renderCandidates() {
   });
 }
 
-byId("clip").addEventListener("change", event => {
+clipInput.addEventListener("change", event => {
   ++matchVersion;
   disableReview();
   if (clipUrl) URL.revokeObjectURL(clipUrl);
   clipFile = event.target.files[0];
+  detectButton.disabled = !localServer || !clipFile;
   clipUrl = clipFile ? URL.createObjectURL(clipFile) : null;
   if (clipUrl) {
     status.textContent = "Loading video metadata…";
@@ -199,7 +206,14 @@ byId("clip").addEventListener("change", event => {
   }
 });
 
-byId("results").addEventListener("change", async event => {
+function setResult(parsed) {
+  result = parsed;
+  videoFrames = new Map(result.frames.map(frame => [frame.index, frame]));
+  renderCandidates();
+  return matchClip();
+}
+
+resultsInput.addEventListener("change", async event => {
   const version = ++resultVersion;
   ++matchVersion;
   disableReview();
@@ -216,12 +230,66 @@ byId("results").addEventListener("change", async event => {
   try {
     const parsed = validate(JSON.parse(await file.text()));
     if (version !== resultVersion) return;
-    result = parsed;
-    videoFrames = new Map(result.frames.map(frame => [frame.index, frame]));
-    renderCandidates();
-    await matchClip();
+    await setResult(parsed);
   } catch (error) {
     if (version === resultVersion) status.textContent = error.message;
+  }
+});
+
+detectButton.addEventListener("click", async () => {
+  if (!clipFile || !localServer) return;
+  if (clipFile.size > 200 * 1024 * 1024) {
+    status.textContent = "Choose an MP4 no larger than 200 MiB.";
+    return;
+  }
+  ++matchVersion;
+  disableReview();
+  result = null;
+  videoFrames.clear();
+  list.replaceChildren();
+  resultsInput.value = "";
+  byId("candidate-count").textContent = "Waiting for detection results.";
+  detectButton.disabled = clipInput.disabled = resultsInput.disabled = true;
+  status.textContent = "Sending clip to the local detector…";
+  try {
+    const response = await fetch("/detect", {
+      method: "POST",
+      headers: { "Content-Type": "application/octet-stream" },
+      body: clipFile,
+    });
+    if (!response.ok || !response.body) {
+      throw new Error(`The local detector could not start (${response.status}).`);
+    }
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let pending = "";
+    try {
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        pending += decoder.decode(value, { stream: true });
+        let end;
+        while ((end = pending.indexOf("\n")) !== -1) {
+          const event = JSON.parse(pending.slice(0, end));
+          pending = pending.slice(end + 1);
+          if (event.error) throw new Error(event.error);
+          if (event.status) status.textContent = event.status;
+          if (event.result) {
+            event.result.video.source = clipFile.name;
+            await setResult(validate(event.result));
+            return;
+          }
+        }
+      }
+      throw new Error("The detector stopped before returning results.");
+    } finally {
+      await reader.cancel();
+    }
+  } catch (error) {
+    status.textContent = `Detection failed: ${error.message}`;
+    byId("candidate-count").textContent = "No candidate results available.";
+  } finally {
+    detectButton.disabled = clipInput.disabled = resultsInput.disabled = false;
   }
 });
 

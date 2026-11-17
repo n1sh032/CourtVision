@@ -13,9 +13,10 @@
     <p>Review candidate contact moments. Candidates are not foul decisions.</p>
     <div class="inputs">
       <label>Original clip <input id="clip" type="file" accept="video/*"></label>
-      <label>Contact results <input id="results" type="file" accept=".json,application/json"></label>
+      <button id="detect" disabled>Run Detection</button>
+      <label>Or open saved results <input id="results" type="file" accept=".json,application/json"></label>
     </div>
-    <p id="status" role="status">Choose a clip and its contact JSON.</p>
+    <p id="status" role="status">Choose an H.264 MP4 to get started.</p>
     <div class="workspace">
       <section aria-label="Video review">
         <div class="stage">

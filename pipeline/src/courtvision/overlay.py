@@ -2,9 +2,10 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Iterable
 from pathlib import Path
 
-from .schema import ClipResult
+from .schema import ClipResult, Frame, VideoMeta
 from .source import fingerprint
 
 SKELETON = [
@@ -14,12 +15,17 @@ SKELETON = [
 
 
 def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> None:
+    render_frames(video_path, result.video, result.frames, out_path)
+
+
+def render_frames(
+    video_path: str | Path, v: VideoMeta, frames: Iterable[Frame], out_path: str | Path,
+) -> None:
     import cv2
 
     video_path, out_path = Path(video_path), Path(out_path)
     if not video_path.is_file() or out_path.exists() or out_path.suffix.lower() != ".mp4":
         raise ValueError("Overlay needs an existing input file and a new .mp4 output")
-    v = result.video
     if v.source_sha256 and fingerprint(video_path) != v.source_sha256:
         raise ValueError("Input video does not match the pose JSON source")
     if not math.isfinite(v.fps) or v.fps <= 0 or min(v.width, v.height) <= 0:
@@ -35,7 +41,7 @@ def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> 
     try:
         if not writer.isOpened():
             raise ValueError(f"Cannot open MP4 writer: {out_path}")
-        by_index = {f.index: f for f in result.frames}
+        records = iter(frames)
         i = 0
         while True:
             ok, img = cap.read()
@@ -43,7 +49,9 @@ def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> 
                 break
             if img.shape[:2] != (v.height, v.width):
                 raise ValueError("Video dimensions differ from pose JSON")
-            frame = by_index.get(i)
+            frame = next(records, None)
+            if frame is None or frame.index != i:
+                raise ValueError("Decoded frame count or order differs from pose JSON")
             if frame:
                 for p in frame.players:
                     x1, y1, x2, y2 = map(int, p.bbox)
@@ -56,7 +64,7 @@ def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> 
                             cv2.line(img, (int(xa), int(ya)), (int(xb), int(yb)), (0, 200, 0), 2)
             writer.write(img)
             i += 1
-        if not i or i != len(result.frames):
+        if not i or next(records, None) is not None:
             raise ValueError("Decoded frame count differs from pose JSON")
     finally:
         cap.release()

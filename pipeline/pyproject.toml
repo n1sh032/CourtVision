@@ -3,7 +3,7 @@ name = "courtvision"
 version = "0.1.0"
 description = "Tracking and pose pipeline for basketball clips."
 requires-python = ">=3.10"
-dependencies = ["pydantic>=2.6"]
+dependencies = ["pydantic>=2.6", "ijson>=3.2"]
 
 [project.optional-dependencies]
 ml = ["ultralytics>=8.3", "opencv-python>=4.9"]

@@ -4,6 +4,29 @@ from courtvision.cli import main
 from courtvision.schema import ClipResult, Frame, VideoMeta
 
 
+def test_overlay_reads_pose_records_in_order(tmp_path, monkeypatch):
+    from courtvision import overlay
+
+    frames = [Frame(index=index, t=index / 30, players=[]) for index in range(2)]
+    result = ClipResult(
+        video=VideoMeta(source="input.mp4", fps=30, width=640, height=480, n_frames=2),
+        frames=frames,
+    )
+    pose = tmp_path / "pose.json"
+    pose.write_text(result.model_dump_json(), encoding="utf-8")
+    output = tmp_path / "output.mp4"
+
+    def render(video_path, metadata, records, out_path):
+        assert metadata == result.video
+        assert iter(records) is records
+        assert list(records) == frames
+        out_path.write_bytes(b"video")
+
+    monkeypatch.setattr(overlay, "render_frames", render)
+    main(["overlay", "input.mp4", str(pose), "-o", str(output)])
+    assert output.read_bytes() == b"video"
+
+
 def test_process_streams_readable_pose_json(tmp_path, monkeypatch):
     from courtvision import track
 

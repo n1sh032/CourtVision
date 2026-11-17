@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from .schema import ClipResult, Frame
+from .schema import Frame
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -57,17 +57,23 @@ def main(argv: list[str] | None = None) -> None:
         print(f"{result.video.n_frames} frames, {detections} player detections, {len(ids)} unique track IDs")
     else:
         from . import overlay
+        from .pose_reader import read_frames, read_metadata
+        from ijson import JSONError
 
         if args.out.suffix.lower() != ".mp4":
             ap.error("overlay output must end in .mp4")
         try:
-            result = ClipResult.model_validate_json(args.json.read_text(encoding="utf-8"))
+            metadata = read_metadata(args.json)
             args.out.parent.mkdir(parents=True, exist_ok=True)
             with TemporaryDirectory(dir=args.out.parent) as folder:
                 temp = Path(folder) / "overlay.mp4"
-                overlay.render(args.video, result, temp)
+                frames = read_frames(args.json)
+                try:
+                    overlay.render_frames(args.video, metadata, frames, temp)
+                finally:
+                    frames.close()
                 temp.rename(args.out)
-        except (OSError, ValueError) as exc:
+        except (OSError, ValueError, JSONError) as exc:
             ap.error(str(exc))
         print(f"wrote {args.out}")
 

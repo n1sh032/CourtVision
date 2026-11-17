@@ -6,8 +6,10 @@ to another player's body. Candidates are not foul decisions.
 
 ## Run a clip
 
-Use Python 3.10 or later. Run these commands from the repository root with a
-clip you have permission to review:
+Use Python 3.10 or later. For browser review, start with a constant frame rate
+H.264 MP4. If the browser cannot open your source, convert a copy before
+processing so the pose records and viewer refer to the same file. Run these
+commands from the repository root with a clip you have permission to review:
 
 ```powershell
 python -m pip install -e "./pipeline[ml]"

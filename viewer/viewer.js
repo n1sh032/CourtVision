@@ -229,7 +229,7 @@ video.addEventListener("loadedmetadata", matchClip);
 video.addEventListener("error", () => {
   ++matchVersion;
   disableReview();
-  if (clipFile) status.textContent = "The browser could not play this video. Try a compatible MP4.";
+  if (clipFile) status.textContent = "The browser could not play this video. Use an H.264 MP4 and regenerate its results.";
 });
 video.addEventListener("seeked", () => {
   requestedFrame = null;

@@ -64,9 +64,10 @@ def main(argv: list[str] | None = None) -> None:
             ap.error(str(exc))
         print(f"{result.video.n_frames} frames, {detections} player detections, {len(ids)} unique track IDs")
     elif args.cmd == "overlay":
+        from ijson import JSONError
+
         from . import overlay
         from .pose_reader import read_frames, read_metadata
-        from ijson import JSONError
 
         if args.out.suffix.lower() != ".mp4":
             ap.error("overlay output must end in .mp4")

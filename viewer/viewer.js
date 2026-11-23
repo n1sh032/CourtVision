@@ -14,7 +14,8 @@ const profile = byId("profile");
 const labelInput = byId("label");
 const exportLabels = byId("export-labels");
 const labels = new Map();
-const localServer = location.protocol === "http:" && location.hostname === "127.0.0.1";
+const localServer = location.protocol === "http:" &&
+  ["127.0.0.1", "courtvision.localhost"].includes(location.hostname);
 const controls = [byId("play"), byId("back"), byId("forward"), seek];
 const skeleton = [[5,6],[5,7],[7,9],[6,8],[8,10],[5,11],[6,12],[11,12],[11,13],[13,15],[12,14],[14,16]];
 

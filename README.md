@@ -66,3 +66,12 @@ Stop the earlier server before restarting with the model. Replace the example fi
 One camera can make players at different depths appear to touch. Occlusion, pose jitter and tracker ID changes can produce false hits or missed contacts. The viewer uses frame rate to map playback time to pose frames, so variable frame rate clips or some codecs can affect stepping. Contact analysis and browser review load the pose result into memory, which is another reason to use short clips.
 
 See the [development log](docs/devlog.md). CourtVision is independent of the NBA and its teams.
+
+## Application structure and local address
+
+Run `courtvision serve` from the repository root and open
+[CourtVision](http://courtvision.localhost:8000). The branded address resolves to
+your own computer in Chrome and Edge. Detection now lives in an application
+service, while the HTTP server handles request validation and upload limits.
+
+See [architecture and development](docs/ARCHITECTURE.md).

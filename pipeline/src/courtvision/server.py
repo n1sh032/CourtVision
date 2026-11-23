@@ -7,6 +7,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from threading import Lock
 
+from .application import DetectionService
+
 logger = logging.getLogger(__name__)
 MAX_CLIP_BYTES = 200 * 1024 * 1024
 ASSETS = {
@@ -28,9 +30,16 @@ def serve(
         from .contact_model import ContactModel
 
         classifier = ContactModel.model_validate_json(contact_model.read_bytes())
+    service = DetectionService(model, device, classifier)
 
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
+            if self.headers.get("Host") not in {
+                f"courtvision.localhost:{self.server.server_port}",
+                f"127.0.0.1:{self.server.server_port}",
+            }:
+                self.send_error(403, "Use the address printed by CourtVision")
+                return
             asset = ASSETS.get(self.path)
             if not asset:
                 self.send_error(404)
@@ -48,8 +57,12 @@ def serve(
                 self.send_error(404)
                 return
             origin = self.headers.get("Origin")
-            expected = f"http://127.0.0.1:{self.server.server_port}"
-            if origin != expected or self.headers.get("Host") != expected.removeprefix("http://"):
+            host = self.headers.get("Host")
+            allowed = {
+                f"courtvision.localhost:{self.server.server_port}",
+                f"127.0.0.1:{self.server.server_port}",
+            }
+            if host not in allowed or origin != f"http://{host}":
                 self.send_error(403, "Open the viewer using the address printed by CourtVision")
                 return
             try:
@@ -91,31 +104,9 @@ def serve(
                             output.write(chunk)
                             remaining -= len(chunk)
 
-                    self.send_event({"status": "Loading pose model…"})
-                    from . import track
-                    from .contact import detect, detect_for_review
-
-                    frames = []
-
-                    def on_frame(frame):
-                        frames.append(frame)
-                        if frame.index == 0 or frame.index % 15 == 0:
-                            self.send_event({"status": f"Processed {frame.index + 1} frames…"})
-
-                    result = track.run(source, model_name=model, device=device, on_frame=on_frame)
-                    result.frames = frames
-                    self.send_event({"status": "Finding contact candidates…"})
-                    if self.path.endswith("profile=broad"):
-                        result.contacts = detect(result)
-                    elif classifier is None:
-                        result.contacts = detect_for_review(result)
-                    else:
-                        from .contact_model import features
-
-                        result.contacts = [
-                            event for event in detect(result)
-                            if classifier.accepts(features(result, event))
-                        ]
+                    result = service.run(
+                        source, self.path.endswith("profile=broad"), self.send_event,
+                    )
                     self.wfile.write(
                         b'{"result":' + result.model_dump_json().encode() + b"}\n"
                     )
@@ -129,7 +120,7 @@ def serve(
                 self.send_event({"error": "Unexpected error. See the CourtVision terminal."})
 
     with ThreadingHTTPServer(("127.0.0.1", port), Handler) as server:
-        print(f"Open http://127.0.0.1:{server.server_port} to run CourtVision.", flush=True)
+        print(f"Open http://courtvision.localhost:{server.server_port} to run CourtVision.", flush=True)
         try:
             server.serve_forever()
         except KeyboardInterrupt:

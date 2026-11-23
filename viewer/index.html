@@ -1,60 +1,127 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CourtVision Review</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="viewer.js" defer></script>
-</head>
-<body>
-  <main>
-    <h1>CourtVision Review</h1>
-    <p>Review candidate contact moments. Candidates are not foul decisions.</p>
-    <div class="inputs">
-      <label>Original clip <input id="clip" type="file" accept="video/*"></label>
-      <button id="detect" disabled>Run Detection</button>
-      <label>Detection mode
-        <select id="profile">
-          <option value="review">Stricter review</option>
-          <option value="broad">Broad search</option>
-        </select>
-      </label>
-      <label>Or open saved results <input id="results" type="file" accept=".json,application/json"></label>
-    </div>
-    <p id="status" role="status">Choose an H.264 MP4 to get started.</p>
-    <div class="workspace">
-      <section aria-label="Video review">
-        <div class="stage">
-          <video id="video" playsinline preload="metadata" aria-label="Basketball clip"></video>
-          <canvas id="overlay" aria-hidden="true"></canvas>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>CourtVision · Film room</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="viewer.js" defer></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a href="#player" class="brand"
+        ><span class="court-mark" aria-hidden="true">CV</span>COURTVISION</a
+      ><span class="top-divider"></span><span class="film-room">FILM ROOM</span
+      ><span class="privacy">Local video analysis</span>
+    </header>
+    <main>
+      <div class="titlebar">
+        <div>
+          <p class="eyebrow">SEE THE MOMENT. REVIEW THE EVIDENCE.</p>
+          <h1>A second look at the game.</h1>
         </div>
-        <div class="controls">
-          <button id="play" disabled>Play</button>
-          <button id="back" disabled>Previous frame</button>
-          <button id="forward" disabled>Next frame</button>
-          <label><input id="show-pose" type="checkbox" checked> Show poses</label>
-        </div>
-        <label class="timeline">Timeline <input id="seek" type="range" min="0" max="0" value="0" disabled></label>
-        <output id="frame">Frame —</output>
-      </section>
-      <section aria-labelledby="candidate-title">
-        <h2 id="candidate-title">Contact candidates</h2>
-        <p id="candidate-count">Load contact JSON to see candidates.</p>
-        <ol id="candidates"></ol>
-        <div class="controls">
-          <label>Selected candidate
-            <select id="label" disabled>
+        <p class="disclaimer">
+          Contact candidates for human review.<br />Every decision stays with
+          you.
+        </p>
+      </div>
+      <div class="studio-grid">
+        <aside class="source-panel">
+          <h2>Session setup</h2>
+          <div class="clip-input">
+            <span class="upload-symbol" aria-hidden="true">▣</span
+            ><label for="clip">Original footage</label>
+            <p>Choose a short H.264 MP4.</p>
+            <input id="clip" type="file" accept="video/*" />
+          </div>
+          <label for="profile">Detection profile</label
+          ><select id="profile">
+            <option value="review">Stricter review</option>
+            <option value="broad">Broad search</option>
+          </select>
+          <p class="field-help">
+            Broad search finds more possibilities to review and label.
+          </p>
+          <button id="detect" disabled class="primary">Run Detection</button>
+          <details class="saved-results">
+            <summary>Open saved results</summary>
+            <label for="results">Contact JSON</label
+            ><input id="results" type="file" accept=".json,application/json" />
+          </details>
+          <div class="session-note">
+            <strong>One angle has limits.</strong>
+            <p>
+              Overlapping players can appear to touch. Use the frames around a
+              candidate to judge what you can see.
+            </p>
+          </div>
+        </aside>
+        <section class="player-panel" aria-label="Video review" id="player">
+          <div class="player-header">
+            <span>SOURCE PLAYBACK</span
+            ><label class="pose-toggle"
+              ><input id="show-pose" type="checkbox" checked />Pose
+              overlay</label
+            >
+          </div>
+          <div class="stage">
+            <video
+              id="video"
+              playsinline
+              preload="metadata"
+              aria-label="Basketball clip"
+            ></video
+            ><canvas id="overlay" aria-hidden="true"></canvas>
+            <div class="stage-empty" aria-hidden="true">
+              <div class="court-outline"></div>
+              <strong>Your footage belongs here.</strong
+              ><span>Choose a clip to enter the film room.</span>
+            </div>
+          </div>
+          <div class="transport">
+            <button id="back" disabled>Previous frame</button
+            ><button id="play" disabled class="play">Play</button
+            ><button id="forward" disabled>Next frame</button>
+          </div>
+          <div class="timeline-bar">
+            <label for="seek">Timeline</label
+            ><input id="seek" type="range" min="0" max="0" value="0" disabled />
+          </div>
+          <div class="frame-info">
+            <output id="frame">Frame —</output
+            ><span>Inspect the lead-up and follow-through.</span>
+          </div>
+          <div class="status-area">
+            <span class="status-label">SESSION</span>
+            <p id="status" role="status">Choose an H.264 MP4 to get started.</p>
+          </div>
+        </section>
+        <section class="candidate-panel" aria-labelledby="candidate-title">
+          <div class="candidate-header">
+            <h2 id="candidate-title">Contact candidates</h2>
+            <p id="candidate-count">Load contact JSON to see candidates.</p>
+          </div>
+          <ol id="candidates"></ol>
+          <div class="label-panel">
+            <label for="label">YOUR REVIEW</label
+            ><select id="label" disabled>
               <option value="">Not reviewed</option>
               <option value="contact">Visible contact</option>
               <option value="no_contact">No contact</option>
               <option value="unclear">Unclear or occluded</option>
             </select>
-          </label>
-          <button id="export-labels" disabled>Export labeled examples</button>
-        </div>
-      </section>
-    </div>
-  </main>
-</body>
+            <p>
+              Label the two highlighted tracks. Keep blocked or ambiguous views
+              marked as unclear.
+            </p>
+            <button id="export-labels" disabled>Export labeled examples</button>
+          </div>
+        </section>
+      </div>
+      <footer>
+        <span>Candidate events, not foul decisions.</span
+        ><span>Video and processing stay on this computer.</span>
+      </footer>
+    </main>
+  </body>
 </html>

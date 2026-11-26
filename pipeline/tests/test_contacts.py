@@ -289,3 +289,6 @@ def test_invalid_frame_times_are_rejected(times):
 def test_detect_preserves_input_and_existing_contacts():
     result = sequence({0, 1, 2})
     result.contacts = detect(result)
+    before = result.model_dump_json()
+    assert not detect(result, distance_ratio=0)
+    assert result.model_dump_json() == before

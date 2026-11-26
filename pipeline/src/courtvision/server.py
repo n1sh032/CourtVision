@@ -7,6 +7,8 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from threading import Lock
 
+from .application import DetectionService
+
 logger = logging.getLogger(__name__)
 MAX_CLIP_BYTES = 200 * 1024 * 1024
 ASSETS = {

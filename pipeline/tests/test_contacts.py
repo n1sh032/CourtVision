@@ -52,3 +52,18 @@ def single(players: list[PlayerFrame], **kwargs: object) -> list[ContactEvent]:
         clip([Frame(index=0, t=0, players=players)]), min_hit_frames=1, **kwargs
     )
 
+
+@pytest.mark.parametrize(
+    ("point", "start", "end", "expected"),
+    [
+        ((3, 5), (0, 0), (0, 10), 3),  # perpendicular projection
+        ((3, -4), (0, 0), (0, 10), 5),  # before the first endpoint
+        ((3, 14), (0, 0), (0, 10), 5),  # beyond the last endpoint
+        ((5, 5), (0, 0), (10, 10), 0),
+        ((3, 4), (0, 0), (0, 0), 5),  # collapsed segment
+        ((-3, -4), (-6, -8), (0, 0), 0),
+    ],
+)
+def test_point_segment_distance(point, start, end, expected):
+    assert point_segment_distance(point, start, end) == pytest.approx(expected)
+

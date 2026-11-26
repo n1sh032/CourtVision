@@ -10,3 +10,6 @@ class DetectionService:
 
     def run(self, source: Path, broad: bool, progress):
         from . import track
+        from .contact import detect, detect_for_review
+
+        frames = []

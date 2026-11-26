@@ -55,3 +55,6 @@ def _valid_box(player: PlayerFrame) -> bool:
     x1, y1, x2, y2 = player.bbox
     return all(math.isfinite(v) for v in player.bbox) and x2 > x1 and y2 > y1
 
+
+def _boxes_touch(a: PlayerFrame, b: PlayerFrame) -> bool:
+    ax1, ay1, ax2, ay2 = a.bbox

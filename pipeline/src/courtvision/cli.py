@@ -63,7 +63,7 @@ def main(argv: list[str] | None = None) -> None:
         if args.out.suffix.lower() != ".mp4":
             ap.error("overlay output must end in .mp4")
         try:
-            result = ClipResult.model_validate_json(args.json.read_text(encoding="utf-8"))
+            metadata = read_metadata(args.json)
             args.out.parent.mkdir(parents=True, exist_ok=True)
             with TemporaryDirectory(dir=args.out.parent) as folder:
                 temp = Path(folder) / "overlay.mp4"

@@ -46,6 +46,11 @@ def main(argv: list[str] | None = None) -> None:
     if args.cmd == "serve":
         from .server import serve
 
+        try:
+            serve(args.viewer_dir, args.port, args.model, args.device, args.contact_model)
+        except (OSError, ValueError) as exc:
+            ap.error(str(exc))
+        return
     if args.out.exists() or args.out.is_symlink():
         ap.error(f"output already exists: {args.out}")
 

@@ -37,3 +37,12 @@ def clip(frames: list[Frame]) -> ClipResult:
         ),
         frames=frames,
     )
+
+
+def sequence(hits: set[int], indices: list[int] | None = None) -> ClipResult:
+    if indices is None:
+        indices = list(range(max(hits, default=-1) + 1))
+    return clip(
+        [Frame(index=i, t=i / 30, players=pair() if i in hits else []) for i in indices]
+    )
+

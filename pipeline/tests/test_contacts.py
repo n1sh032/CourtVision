@@ -358,3 +358,6 @@ def test_contacts_cli_preserves_poses_and_replaces_existing_events(tmp_path, cap
 def test_each_cli_threshold_can_retune_saved_json(tmp_path, options):
     source, target = tmp_path / "poses.json", tmp_path / "contacts.json"
     source.write_text(sequence({0, 3, 4}).model_dump_json(), encoding="utf-8")
+    main(["contacts", str(source), "-o", str(target), *options])
+    assert ClipResult.model_validate_json(target.read_text()).contacts == []
+

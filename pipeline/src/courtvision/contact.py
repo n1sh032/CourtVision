@@ -37,3 +37,15 @@ WRIST_ELBOW = ((9, 7), (10, 8))
 
 def point_segment_distance(point: Point, start: Point, end: Point) -> float:
     """Euclidean pixel distance to the finite segment, including its endpoints."""
+    dx, dy = end[0] - start[0], end[1] - start[1]
+    length_squared = dx * dx + dy * dy
+    if length_squared == 0:
+        return math.hypot(point[0] - start[0], point[1] - start[1])
+    projection = (
+        (point[0] - start[0]) * dx + (point[1] - start[1]) * dy
+    ) / length_squared
+    fraction = max(0.0, min(1.0, projection))
+    return math.hypot(
+        point[0] - (start[0] + fraction * dx),
+        point[1] - (start[1] + fraction * dy),
+    )

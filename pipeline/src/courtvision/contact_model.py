@@ -28,3 +28,6 @@ Vector = tuple[FiniteFloat, FiniteFloat, FiniteFloat, FiniteFloat, FiniteFloat]
 
 class ContactModel(BaseModel):
     version: Literal[1] = 1
+    mean: Vector
+    scale: Vector
+    weight: Vector

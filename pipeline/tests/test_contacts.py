@@ -331,3 +331,6 @@ def test_contact_event_contract_rejects_invalid_intervals(update):
         ContactEvent(**(fields | update))
 
 
+def test_contacts_cli_preserves_poses_and_replaces_existing_events(tmp_path, capsys):
+    result = sequence({0, 3, 4})
+    source, target = tmp_path / "poses.json", tmp_path / "nested" / "contacts.json"

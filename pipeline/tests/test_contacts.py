@@ -76,3 +76,9 @@ def test_inclusive_distance_threshold(distance, expected):
 def test_zero_distance_threshold_is_supported():
     assert len(single(pair(0), distance_ratio=0)) == 1
     assert not single(pair(0.01), distance_ratio=0)
+
+
+def test_distance_scales_with_target_height_not_wrist_owner():
+    players = pair(10)
+    players[0].bbox = (0, 0, 50, 1000)
+    assert not single(players)  # target height 100: threshold 8, not 80

@@ -30,8 +30,8 @@ class PlayerFrame(BaseModel):
 
 
 class Frame(BaseModel):
-    index: int
-    t: float  # seconds
+    index: int = Field(ge=0)
+    t: FiniteFloat = Field(ge=0)  # seconds
     players: list[PlayerFrame]
 
 

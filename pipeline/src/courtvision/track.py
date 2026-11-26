@@ -40,3 +40,15 @@ def run(
     model = YOLO(model_name)
     frames: list[Frame] = []
     started = time.perf_counter()
+    last_report = started
+    print("Starting tracking; waiting for the first frame...", file=sys.stderr, flush=True)
+    stream = model.track(
+        source=str(video_path),
+        stream=True,
+        persist=True,
+        tracker=tracker,
+        conf=conf,
+        classes=[0],  # person
+        device=device,
+        verbose=False,
+    )

@@ -7,6 +7,9 @@ from courtvision.schema import ClipResult, Frame, VideoMeta
 def test_process_streams_readable_pose_json(tmp_path, monkeypatch):
     from courtvision import track
 
+    def run(video, *, model_name, device, on_frame):
+        for index in range(2):
+            on_frame(Frame(index=index, t=index / 30, players=[]))
 
 
 def test_existing_output_is_preserved(tmp_path):

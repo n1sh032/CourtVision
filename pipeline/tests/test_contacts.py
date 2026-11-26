@@ -67,3 +67,9 @@ def single(players: list[PlayerFrame], **kwargs: object) -> list[ContactEvent]:
 def test_point_segment_distance(point, start, end, expected):
     assert point_segment_distance(point, start, end) == pytest.approx(expected)
 
+
+@pytest.mark.parametrize(("distance", "expected"), [(0, 1), (8, 1), (8.01, 0)])
+def test_inclusive_distance_threshold(distance, expected):
+    assert len(single(pair(distance))) == expected
+
+

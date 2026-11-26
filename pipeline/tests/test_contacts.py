@@ -286,3 +286,6 @@ def test_invalid_frame_times_are_rejected(times):
         detect(result)
 
 
+def test_detect_preserves_input_and_existing_contacts():
+    result = sequence({0, 1, 2})
+    result.contacts = detect(result)

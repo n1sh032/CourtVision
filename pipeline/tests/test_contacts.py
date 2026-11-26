@@ -187,3 +187,6 @@ def test_tolerated_gaps_do_not_count_as_hits_or_extend_the_end():
     (event,) = detect(sequence({0, 3, 4}, indices=list(range(8))))
     assert (event.start_frame, event.end_frame, event.hit_frames) == (0, 4, 3)
 
+
+def test_gap_beyond_limit_splits_events():
+    events = detect(sequence({0, 1, 2, 6, 7, 8}))

@@ -106,3 +106,18 @@ class _PendingEvent:
         return ContactEvent(track_ids=track_ids, **vars(self))
 
 
+def detect(
+    result: ClipResult,
+    distance_ratio: float = 0.08,
+    min_conf: float = 0.3,
+    min_hit_frames: int = 3,
+    max_gap_frames: int = 2,
+    *,
+    conservative: bool = False,
+) -> list[ContactEvent]:
+    """Return candidates without modifying the input poses or existing contacts.
+
+    Distance is scaled by the target player's box height. Both wrist directions
+    are tested, but a track pair contributes at most one hit per frame. Gaps are
+    measured using frame indices, including indices absent from the input JSON.
+    """

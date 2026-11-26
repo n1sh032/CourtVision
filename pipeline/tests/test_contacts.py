@@ -151,3 +151,6 @@ def test_both_wrists_and_both_player_directions(wrist, reverse_order):
         players.reverse()
     assert single(players)[0].track_ids == (1, 2)
 
+
+def test_only_wrists_start_a_hit_and_face_edges_are_excluded():
+    players = pair()

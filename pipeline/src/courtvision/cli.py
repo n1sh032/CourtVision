@@ -35,6 +35,9 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--port", type=int, default=8000)
     p.add_argument("--model", default="yolo11n-pose.pt")
     p.add_argument("--device", default=None)
+    p.add_argument("--viewer-dir", type=Path, default=Path("viewer"))
+    p.add_argument("--contact-model", type=Path, help="trained event classifier JSON")
+
     args = ap.parse_args(argv)
     if args.out.exists() or args.out.is_symlink():
         ap.error(f"output already exists: {args.out}")

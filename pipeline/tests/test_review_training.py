@@ -7,3 +7,6 @@ from courtvision.schema import ClipResult, ContactEvent, Frame, PlayerFrame, Vid
 def player(track, left, *, visible=True):
     points = [(0, 0, 0)] * 17
     points[9] = (45, 45, 1)
+    if visible:
+        points[5], points[6] = (left + 5, 25, 1), (left + 20, 25, 1)
+        points[11], points[12] = (left + 5, 65, 1), (left + 20, 65, 1)

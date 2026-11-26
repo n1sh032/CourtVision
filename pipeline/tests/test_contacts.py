@@ -361,3 +361,6 @@ def test_each_cli_threshold_can_retune_saved_json(tmp_path, options):
     main(["contacts", str(source), "-o", str(target), *options])
     assert ClipResult.model_validate_json(target.read_text()).contacts == []
 
+
+def test_invalid_cli_tuning_reports_error_without_writing_output(tmp_path, capsys):
+    source, target = tmp_path / "poses.json", tmp_path / "contacts.json"

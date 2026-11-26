@@ -29,6 +29,9 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--distance-ratio", type=float, default=0.08)
     p.add_argument("--min-conf", type=float, default=0.3)
     p.add_argument("--min-hit-frames", type=int, default=3)
+    p.add_argument("--max-gap-frames", type=int, default=2)
+
+    p = sub.add_parser("serve", help="run detection and review from a local browser")
     args = ap.parse_args(argv)
     if args.out.exists() or args.out.is_symlink():
         ap.error(f"output already exists: {args.out}")

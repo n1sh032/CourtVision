@@ -58,3 +58,6 @@ def _valid_box(player: PlayerFrame) -> bool:
 
 def _boxes_touch(a: PlayerFrame, b: PlayerFrame) -> bool:
     ax1, ay1, ax2, ay2 = a.bbox
+    bx1, by1, bx2, by2 = b.bbox
+    return ax1 <= bx2 and ax2 >= bx1 and ay1 <= by2 and ay2 >= by1
+

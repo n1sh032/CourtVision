@@ -277,3 +277,12 @@ def test_invalid_frame_order_is_rejected(indices):
         detect(result)
 
 
+@pytest.mark.parametrize("times", [[-1], [math.nan], [math.inf], [1, 0]])
+def test_invalid_frame_times_are_rejected(times):
+    result = clip([]).model_copy(update={
+        "frames": [Frame.model_construct(index=i, t=t, players=[]) for i, t in enumerate(times)],
+    })
+    with pytest.raises(ValueError, match="frame times"):
+        detect(result)
+
+

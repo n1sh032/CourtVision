@@ -151,3 +151,6 @@ def detect(
             )
         previous_index, previous_t = frame.index, frame.t
 
+        for pair in list(active):
+            if frame.index - active[pair].end_frame > max_gap_frames + 1:
+                finish(pair)

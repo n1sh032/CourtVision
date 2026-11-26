@@ -10,3 +10,9 @@ from pydantic import BaseModel, Field, FiniteFloat
 
 from .contact import BODY_SEGMENTS, WRISTS, _usable, _valid_box, point_segment_distance
 from .schema import ClipResult, ContactEvent
+
+
+class Label(BaseModel):
+    event_index: int = Field(ge=0)
+    label: Literal["contact", "no_contact", "unclear"]
+

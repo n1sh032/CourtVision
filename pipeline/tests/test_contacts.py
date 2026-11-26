@@ -388,6 +388,11 @@ def test_contacts_command_does_not_import_ml_packages(tmp_path: Path):
         check=False,
         text=True,
         timeout=20,
+        env={
+            **os.environ,
+            "PYTHONPATH": str(Path(__file__).resolve().parents[1] / "src")
+            + os.pathsep + os.environ.get("PYTHONPATH", ""),
+        },
     )
     assert completed.returncode == 0, completed.stderr
     assert len(ClipResult.model_validate_json(target.read_text()).contacts) == 1

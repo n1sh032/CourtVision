@@ -40,8 +40,17 @@ def main(argv: list[str] | None = None) -> None:
     else:
         from . import overlay
 
-        result = ClipResult.model_validate_json(args.json.read_text())
-        overlay.render(args.video, result, args.out)
+        if args.out.suffix.lower() != ".mp4":
+            ap.error("overlay output must end in .mp4")
+        try:
+            result = ClipResult.model_validate_json(args.json.read_text(encoding="utf-8"))
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            with TemporaryDirectory(dir=args.out.parent) as folder:
+                temp = Path(folder) / "overlay.mp4"
+                overlay.render(args.video, result, temp)
+                temp.rename(args.out)
+        except (OSError, ValueError) as exc:
+            ap.error(str(exc))
         print(f"wrote {args.out}")
 
 

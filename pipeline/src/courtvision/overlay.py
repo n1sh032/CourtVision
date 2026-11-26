@@ -15,6 +15,9 @@ SKELETON = [
 
 
 def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> None:
+    render_frames(video_path, result.video, result.frames, out_path)
+
+
     import cv2
 
     video_path, out_path = Path(video_path), Path(out_path)

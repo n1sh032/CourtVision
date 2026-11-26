@@ -19,3 +19,12 @@ def run(
     import cv2
     from ultralytics import YOLO
 
+    video_path = Path(video_path)
+    cap = cv2.VideoCapture(str(video_path))
+    if not cap.isOpened():
+        raise FileNotFoundError(f"Cannot open video: {video_path}")
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    if not math.isfinite(fps) or fps <= 0:
+        fps = 30.0
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))

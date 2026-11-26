@@ -58,3 +58,6 @@ def serve(
                 size = 0
             if not 0 < size <= MAX_CLIP_BYTES:
                 self.send_error(413, "Choose a clip no larger than 200 MiB")
+                return
+            if not job.acquire(blocking=False):
+                self.send_error(409, "Detection is already running")

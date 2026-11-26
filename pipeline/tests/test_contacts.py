@@ -301,3 +301,6 @@ def test_legacy_json_and_contact_json_round_trip():
     assert result.contacts == []
     result.contacts = detect(result)
     assert result.schema_version == "0.1.0"
+    assert ClipResult.model_validate_json(result.model_dump_json()) == result
+
+

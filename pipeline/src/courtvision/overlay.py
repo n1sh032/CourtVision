@@ -18,6 +18,9 @@ def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> 
     render_frames(video_path, result.video, result.frames, out_path)
 
 
+def render_frames(
+    video_path: str | Path, v: VideoMeta, frames: Iterable[Frame], out_path: str | Path,
+) -> None:
     import cv2
 
     video_path, out_path = Path(video_path), Path(out_path)

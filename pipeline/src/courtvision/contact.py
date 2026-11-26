@@ -133,3 +133,9 @@ def detect(
     events: list[ContactEvent] = []
     active: dict[TrackPair, _PendingEvent] = {}
     previous_index = -1
+    previous_t = -1.0
+
+    def finish(pair: TrackPair) -> None:
+        pending = active.pop(pair)
+        if pending.hit_frames >= min_hit_frames:
+            events.append(pending.finish(pair))

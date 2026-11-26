@@ -196,3 +196,6 @@ def test_gap_beyond_limit_splits_events():
 def test_gaps_use_frame_indices_even_when_frames_are_absent():
     assert detect(sequence({0, 3, 4}, [0, 3, 4]))[0].hit_frames == 3
     events = detect(sequence({0, 4, 5}, [0, 4, 5]), min_hit_frames=2)
+    assert [(e.start_frame, e.end_frame) for e in events] == [(4, 5)]
+
+

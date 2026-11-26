@@ -13,3 +13,9 @@ def player(track, left, *, visible=True):
         points[7] = (left + 12, 38, 1)
     return PlayerFrame(track_id=track, bbox=(left, 0, left + 60, 100), keypoints=points)
 
+
+def clip(name, annotated_frames, *, target_left=42, visible=True):
+    frames = [
+        Frame(index=i, t=i / 30, players=[player(1, 0), player(2, target_left, visible=visible)])
+        for i in range(annotated_frames)
+    ]

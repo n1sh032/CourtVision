@@ -82,3 +82,6 @@ def _wrist_near_body(
             start, end = target.keypoints[start_index], target.keypoints[end_index]
             if not (_usable(start, min_conf) and _usable(end, min_conf)):
                 continue
+            if point_segment_distance(wrist[:2], start[:2], end[:2]) <= threshold:
+                return True
+    return False

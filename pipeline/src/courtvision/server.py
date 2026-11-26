@@ -120,7 +120,7 @@ def serve(
                 self.send_event({"error": "Unexpected error. See the CourtVision terminal."})
 
     with ThreadingHTTPServer(("127.0.0.1", port), Handler) as server:
-        print(f"Open http://127.0.0.1:{server.server_port} to run CourtVision.", flush=True)
+        print(f"Open http://courtvision.localhost:{server.server_port} to run CourtVision.", flush=True)
         try:
             server.serve_forever()
         except KeyboardInterrupt:

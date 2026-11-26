@@ -139,3 +139,9 @@ def detect(
         pending = active.pop(pair)
         if pending.hit_frames >= min_hit_frames:
             events.append(pending.finish(pair))
+
+    for frame in result.frames:
+        if frame.index <= previous_index:
+            raise ValueError(
+                "frame indices must be nonnegative and strictly increasing"
+            )

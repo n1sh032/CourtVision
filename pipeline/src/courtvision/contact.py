@@ -94,3 +94,6 @@ def _reviewable_pair(a: PlayerFrame, b: PlayerFrame, min_conf: float) -> bool:
     return all(sum(_usable(p.keypoints[i], min_conf) for i in TORSO) >= 3 for p in (a, b))
 
 
+@dataclass
+class _PendingEvent:
+    start_frame: int

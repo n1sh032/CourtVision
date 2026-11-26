@@ -28,3 +28,6 @@ def run(
         fps = 30.0
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    cap.release()
+

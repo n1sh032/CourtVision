@@ -16,3 +16,6 @@ class Label(BaseModel):
     event_index: int = Field(ge=0)
     label: Literal["contact", "no_contact", "unclear"]
 
+
+class Review(BaseModel):
+    version: Literal[1]

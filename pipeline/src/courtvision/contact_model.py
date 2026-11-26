@@ -22,3 +22,6 @@ class Review(BaseModel):
     result: ClipResult
     labels: list[Label]
 
+
+Vector = tuple[FiniteFloat, FiniteFloat, FiniteFloat, FiniteFloat, FiniteFloat]
+

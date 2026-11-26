@@ -247,3 +247,24 @@ def test_pairs_merge_independently_and_output_is_sorted():
         ((3, 4), 1, 3),
     ]
 
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        {"distance_ratio": -0.1},
+        {"distance_ratio": math.nan},
+        {"distance_ratio": math.inf},
+        {"min_conf": -0.01},
+        {"min_conf": 1.01},
+        {"min_conf": math.nan},
+        {"min_hit_frames": 0},
+        {"min_hit_frames": 1.5},
+        {"max_gap_frames": -1},
+        {"max_gap_frames": 0.5},
+    ],
+)
+def test_invalid_tuning_is_rejected(kwargs):
+    with pytest.raises(ValueError):
+        detect(sequence(set()), **kwargs)
+
+

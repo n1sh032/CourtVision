@@ -28,3 +28,9 @@ def serve(
         from .contact_model import ContactModel
 
         classifier = ContactModel.model_validate_json(contact_model.read_bytes())
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_GET(self):
+            asset = ASSETS.get(self.path)
+            if not asset:
+                self.send_error(404)

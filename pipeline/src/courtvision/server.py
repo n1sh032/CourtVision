@@ -76,3 +76,51 @@ def serve(
         def run_detection(self, size):
             self.send_response(200)
             self.send_header("Content-Type", "application/x-ndjson; charset=utf-8")
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            try:
+                with TemporaryDirectory(prefix="courtvision-") as folder:
+                    source = Path(folder) / "clip.mp4"
+                    self.connection.settimeout(60)
+                    with source.open("wb") as output:
+                        remaining = size
+                        while remaining:
+                            chunk = self.rfile.read(min(remaining, 1024 * 1024))
+                            if not chunk:
+                                raise ValueError("Clip upload ended early")
+                            output.write(chunk)
+                            remaining -= len(chunk)
+
+                    self.send_event({"status": "Loading pose model…"})
+                    from . import track
+                    from .contact import detect, detect_for_review
+
+                    frames = []
+
+                    def on_frame(frame):
+                        frames.append(frame)
+                        if frame.index == 0 or frame.index % 15 == 0:
+                            self.send_event({"status": f"Processed {frame.index + 1} frames…"})
+
+                    result = track.run(source, model_name=model, device=device, on_frame=on_frame)
+                    result.frames = frames
+                    self.send_event({"status": "Finding contact candidates…"})
+                    if self.path.endswith("profile=broad"):
+                        result.contacts = detect(result)
+                    elif classifier is None:
+                        result.contacts = detect_for_review(result)
+                    else:
+                        from .contact_model import features
+
+                        result.contacts = [
+                            event for event in detect(result)
+                            if classifier.accepts(features(result, event))
+                        ]
+                    self.wfile.write(
+                        b'{"result":' + result.model_dump_json().encode() + b"}\n"
+                    )
+                    self.wfile.flush()
+            except (BrokenPipeError, ConnectionResetError):
+                raise
+            except (OSError, ValueError, RuntimeError, ImportError) as exc:
+                self.send_event({"error": str(exc) or type(exc).__name__})

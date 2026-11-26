@@ -57,6 +57,15 @@ def main(argv: list[str] | None = None) -> None:
     if args.cmd == "train-contacts":
         from .contact_model import train
 
+        try:
+            classifier, report = train(args.reviews)
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            with args.out.open("x", encoding="utf-8") as output:
+                output.write(classifier.model_dump_json(indent=2))
+        except (OSError, ValueError) as exc:
+            ap.error(str(exc))
+        print("Held-out clip results on labeled candidates:", json.dumps(report))
+    elif args.cmd == "process":
         from . import track
 
         detections = 0

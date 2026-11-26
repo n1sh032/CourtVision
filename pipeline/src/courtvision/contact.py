@@ -130,3 +130,6 @@ def detect(
     if not isinstance(max_gap_frames, int) or max_gap_frames < 0:
         raise ValueError("max_gap_frames must be a nonnegative integer")
 
+    events: list[ContactEvent] = []
+    active: dict[TrackPair, _PendingEvent] = {}
+    previous_index = -1

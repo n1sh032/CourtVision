@@ -376,3 +376,15 @@ def test_contacts_command_does_not_import_ml_packages(tmp_path: Path):
     source, target = tmp_path / "poses.json", tmp_path / "contacts.json"
     legacy = sequence({0, 1, 2}).model_dump()
     legacy.pop("contacts")
+    source.write_text(json.dumps(legacy), encoding="utf-8")
+    code = (
+        "import sys; from courtvision.cli import main; main(); "
+        "assert not any(m in sys.modules for m in ('cv2', 'torch', 'ultralytics'))"
+    )
+    completed = subprocess.run(
+        [sys.executable, "-c", code, "contacts", str(source), "-o", str(target)],
+        capture_output=True,
+        check=False,
+        text=True,
+        timeout=20,
+    )

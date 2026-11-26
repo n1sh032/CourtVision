@@ -31,3 +31,6 @@ BODY_SEGMENTS: tuple[tuple[int, int], ...] = (
 )
 WRISTS = (9, 10)
 TORSO = (5, 6, 11, 12)
+TORSO_SEGMENTS = ((5, 6), (5, 11), (6, 12), (11, 12))
+WRIST_ELBOW = ((9, 7), (10, 8))
+

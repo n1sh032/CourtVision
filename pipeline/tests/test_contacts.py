@@ -292,3 +292,9 @@ def test_detect_preserves_input_and_existing_contacts():
     before = result.model_dump_json()
     assert not detect(result, distance_ratio=0)
     assert result.model_dump_json() == before
+
+
+def test_legacy_json_and_contact_json_round_trip():
+    legacy = sequence({0, 1, 2}).model_dump()
+    legacy.pop("contacts")
+    result = ClipResult.model_validate_json(json.dumps(legacy))

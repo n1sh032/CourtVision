@@ -97,3 +97,6 @@ def _reviewable_pair(a: PlayerFrame, b: PlayerFrame, min_conf: float) -> bool:
 @dataclass
 class _PendingEvent:
     start_frame: int
+    end_frame: int
+    start_t: float
+    end_t: float

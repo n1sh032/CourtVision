@@ -46,3 +46,9 @@ def sequence(hits: set[int], indices: list[int] | None = None) -> ClipResult:
         [Frame(index=i, t=i / 30, players=pair() if i in hits else []) for i in indices]
     )
 
+
+def single(players: list[PlayerFrame], **kwargs: object) -> list[ContactEvent]:
+    return detect(
+        clip([Frame(index=0, t=0, players=players)]), min_hit_frames=1, **kwargs
+    )
+

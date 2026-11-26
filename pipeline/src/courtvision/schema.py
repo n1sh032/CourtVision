@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field, FiniteFloat, model_validator
 
 SCHEMA_VERSION = "0.1.0"
 
-Keypoint = tuple[float, float, float]  # x, y, confidence
+Keypoint = tuple[FiniteFloat, FiniteFloat, FiniteFloat]  # x, y, confidence
 
 
 class VideoMeta(BaseModel):

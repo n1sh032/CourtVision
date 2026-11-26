@@ -181,3 +181,9 @@ def test_consecutive_hits_have_inclusive_frame_and_time_bounds():
     assert (event.start_frame, event.end_frame, event.hit_frames) == (10, 12, 3)
     assert event.start_t == pytest.approx(10 / 30)
     assert event.end_t == pytest.approx(12 / 30)
+
+
+def test_tolerated_gaps_do_not_count_as_hits_or_extend_the_end():
+    (event,) = detect(sequence({0, 3, 4}, indices=list(range(8))))
+    assert (event.start_frame, event.end_frame, event.hit_frames) == (0, 4, 3)
+

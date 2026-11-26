@@ -154,3 +154,6 @@ def test_both_wrists_and_both_player_directions(wrist, reverse_order):
 
 def test_only_wrists_start_a_hit_and_face_edges_are_excluded():
     players = pair()
+    players[0].keypoints[7], players[0].keypoints[9] = (45, 50, 1), (0, 0, 0)
+    assert not single(players)
+    players = pair()

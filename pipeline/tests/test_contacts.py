@@ -157,3 +157,6 @@ def test_only_wrists_start_a_hit_and_face_edges_are_excluded():
     players[0].keypoints[7], players[0].keypoints[9] = (45, 50, 1), (0, 0, 0)
     assert not single(players)
     players = pair()
+    players[1].keypoints = [(0, 0, 0)] * 17
+    players[1].keypoints[0], players[1].keypoints[1] = (50, 20, 1), (50, 80, 1)
+    assert not single(players)

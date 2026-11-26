@@ -31,6 +31,9 @@ def test_failed_process_leaves_no_output(tmp_path, monkeypatch):
         raise ValueError("failed to decode video")
 
     monkeypatch.setattr(track, "run", run)
+    output = tmp_path / "pose.json"
+    with pytest.raises(SystemExit):
+        main(["process", "input.mp4", "-o", str(output)])
 
 
 def test_existing_output_is_preserved(tmp_path):

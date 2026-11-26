@@ -172,3 +172,15 @@ def detect(
                 pending = active[pair]
                 pending.end_frame, pending.end_t = frame.index, frame.t
                 pending.hit_frames += 1
+            else:
+                active[pair] = _PendingEvent(
+                    start_frame=frame.index,
+                    end_frame=frame.index,
+                    start_t=frame.t,
+                    end_t=frame.t,
+                )
+
+    for pair in list(active):
+        finish(pair)
+    return sorted(events, key=lambda event: (event.start_frame, event.track_ids))
+

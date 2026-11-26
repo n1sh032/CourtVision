@@ -103,3 +103,9 @@ def test_boxes_must_be_valid_and_touch(bbox, expected):
     players = pair()
     players[1].bbox = bbox
     assert len(single(players)) == expected
+
+
+def test_corner_touch_is_inclusive():
+    players = pair(0)
+    players[0].keypoints[9] = (50, 100, 1)
+    players[1].bbox = (50, 100, 100, 200)

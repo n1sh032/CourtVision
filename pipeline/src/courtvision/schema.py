@@ -39,3 +39,12 @@ class ClipResult(BaseModel):
     schema_version: Literal["0.1.0"] = SCHEMA_VERSION
     video: VideoMeta
     frames: list[Frame]
+
+    @model_validator(mode="after")
+    def validate_order(self):
+        previous_time = 0.0
+        for index, frame in enumerate(self.frames):
+            if frame.index != index or frame.t < previous_time:
+                raise ValueError("Frame indices must be consecutive and times nondecreasing")
+            previous_time = frame.t
+        return self

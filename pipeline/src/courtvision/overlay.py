@@ -16,3 +16,6 @@ def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> 
 
     cap = cv2.VideoCapture(str(video_path))
     v = result.video
+    writer = cv2.VideoWriter(
+        str(out_path), cv2.VideoWriter_fourcc(*"mp4v"), v.fps, (v.width, v.height)
+    )

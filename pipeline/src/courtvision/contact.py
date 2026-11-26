@@ -187,3 +187,12 @@ def detect(
 
 def detect_for_review(result: ClipResult) -> list[ContactEvent]:
     """Favor visible, sustained torso candidates in the browser workflow."""
+    fps = result.video.fps
+    return detect(
+        result,
+        distance_ratio=0.05,
+        min_conf=0.45,
+        min_hit_frames=max(3, math.ceil(0.2 * fps)),
+        max_gap_frames=max(0, round(0.035 * fps)),
+        conservative=True,
+    )

@@ -15,6 +15,9 @@ SKELETON = [
 def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> None:
     import cv2
 
+    video_path, out_path = Path(video_path), Path(out_path)
+    if not video_path.is_file() or out_path.exists() or out_path.suffix.lower() != ".mp4":
+        raise ValueError("Overlay needs an existing input file and a new .mp4 output")
     cap = cv2.VideoCapture(str(video_path))
     v = result.video
     writer = cv2.VideoWriter(

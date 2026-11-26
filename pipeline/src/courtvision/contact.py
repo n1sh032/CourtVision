@@ -184,3 +184,6 @@ def detect(
         finish(pair)
     return sorted(events, key=lambda event: (event.start_frame, event.track_ids))
 
+
+def detect_for_review(result: ClipResult) -> list[ContactEvent]:
+    """Favor visible, sustained torso candidates in the browser workflow."""

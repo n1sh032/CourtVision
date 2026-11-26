@@ -5,7 +5,9 @@ Bump SCHEMA_VERSION on any breaking change.
 """
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from typing import Literal
+
+from pydantic import BaseModel, Field, FiniteFloat, model_validator
 
 SCHEMA_VERSION = "0.1.0"
 

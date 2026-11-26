@@ -31,3 +31,9 @@ def run(
     n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     cap.release()
 
+    print(
+        f"Video: {n_frames} frames, {width}x{height}, {fps:.2f} FPS "
+        f"({n_frames / fps:.1f}s). Loading {model_name}...",
+        file=sys.stderr,
+        flush=True,
+    )

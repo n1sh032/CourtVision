@@ -241,3 +241,9 @@ def test_pairs_merge_independently_and_output_is_sorted():
                 player.keypoints = [(x + 200, y, c) for x, y, c in player.keypoints]
                 players.insert(0, player)
         frames.append(Frame(index=index, t=index / 30, players=players))
+    events = detect(clip(frames))
+    assert [(e.track_ids, e.start_frame, e.end_frame) for e in events] == [
+        ((1, 2), 0, 2),
+        ((3, 4), 1, 3),
+    ]
+

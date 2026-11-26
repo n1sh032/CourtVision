@@ -49,3 +49,6 @@ def features(result: ClipResult, event: ContactEvent) -> Vector:
             continue
         if frame.index > event.end_frame:
             break
+        players = {p.track_id: p for p in frame.players if _valid_box(p)}
+        if track_a not in players or track_b not in players:
+            continue

@@ -157,3 +157,6 @@ def detect(
 
         hits: set[TrackPair] = set()
         players = [player for player in frame.players if _valid_box(player)]
+        for a, b in combinations(players, 2):
+            if a.track_id == b.track_id or not _boxes_touch(a, b):
+                continue

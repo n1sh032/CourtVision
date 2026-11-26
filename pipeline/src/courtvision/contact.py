@@ -64,3 +64,21 @@ def _boxes_touch(a: PlayerFrame, b: PlayerFrame) -> bool:
 
 def _usable(keypoint: Keypoint, min_conf: float) -> bool:
     return all(math.isfinite(v) for v in keypoint) and min_conf < keypoint[2] <= 1.0
+
+
+def _wrist_near_body(
+    source: PlayerFrame, target: PlayerFrame, distance_ratio: float, min_conf: float,
+    conservative: bool = False,
+) -> bool:
+    threshold = distance_ratio * (target.bbox[3] - target.bbox[1])
+    segments = TORSO_SEGMENTS if conservative else BODY_SEGMENTS
+    for wrist_index, elbow_index in WRIST_ELBOW:
+        wrist = source.keypoints[wrist_index]
+        if not _usable(wrist, min_conf) or (
+            conservative and not _usable(source.keypoints[elbow_index], min_conf)
+        ):
+            continue
+        for start_index, end_index in segments:
+            start, end = target.keypoints[start_index], target.keypoints[end_index]
+            if not (_usable(start, min_conf) and _usable(end, min_conf)):
+                continue

@@ -10,6 +10,12 @@ def test_process_streams_readable_pose_json(tmp_path, monkeypatch):
     def run(video, *, model_name, device, on_frame):
         for index in range(2):
             on_frame(Frame(index=index, t=index / 30, players=[]))
+        return ClipResult(
+            video=VideoMeta(source=video.name, fps=30, width=640, height=480, n_frames=2),
+            frames=[],
+        )
+
+    monkeypatch.setattr(track, "run", run)
 
 
 def test_existing_output_is_preserved(tmp_path):

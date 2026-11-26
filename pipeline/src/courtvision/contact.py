@@ -100,3 +100,9 @@ class _PendingEvent:
     end_frame: int
     start_t: float
     end_t: float
+    hit_frames: int = 1
+
+    def finish(self, track_ids: TrackPair) -> ContactEvent:
+        return ContactEvent(track_ids=track_ids, **vars(self))
+
+

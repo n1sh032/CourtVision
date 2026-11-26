@@ -20,6 +20,9 @@ def test_overlay_reads_pose_records_in_order(tmp_path, monkeypatch):
         assert metadata == result.video
         assert iter(records) is records
         assert list(records) == frames
+        out_path.write_bytes(b"video")
+
+    monkeypatch.setattr(overlay, "render_frames", render)
 
 
 def test_process_streams_readable_pose_json(tmp_path, monkeypatch):

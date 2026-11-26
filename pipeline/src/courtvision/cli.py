@@ -22,3 +22,9 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("json", type=Path)
     p.add_argument("-o", "--out", type=Path, required=True)
 
+    args = ap.parse_args(argv)
+
+    if args.cmd == "process":
+        from . import track
+
+        result = track.run(args.video, model_name=args.model, device=args.device)

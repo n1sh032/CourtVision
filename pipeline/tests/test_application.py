@@ -16,3 +16,6 @@ def test_service_preserves_streamed_frames_and_reports_progress(monkeypatch):
 
     monkeypatch.setattr(track, "run", fake_run)
     updates = []
+    result = DetectionService("pose.pt", "cpu").run(Path("clip.mp4"), False, updates.append)
+    assert len(result.frames) == 1
+    assert result.contacts == []

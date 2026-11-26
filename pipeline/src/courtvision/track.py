@@ -21,6 +21,9 @@ def run(
     from ultralytics import YOLO
 
     video_path = Path(video_path)
+    if not video_path.is_file():
+        raise FileNotFoundError(f"Video must be a local file: {video_path}")
+    source_sha256 = fingerprint(video_path)
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
         cap.release()

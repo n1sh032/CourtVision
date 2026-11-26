@@ -88,6 +88,8 @@ def run(
             print(progress, file=sys.stderr, flush=True)
             last_report = now
 
+    if not frames:
+        raise ValueError(f"No video frames decoded: {video_path}")
     return ClipResult(
         video=VideoMeta(
             source=video_path.name, fps=fps, width=width, height=height, n_frames=n_frames

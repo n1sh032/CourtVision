@@ -50,6 +50,8 @@ def main(argv: list[str] | None = None) -> None:
                         args.video, model_name=args.model, device=args.device, on_frame=write_frame,
                     )
                     metadata = result.model_dump_json(exclude={"frames"})
+                    output.write("]," + metadata[1:])
+                temp.rename(args.out)
         except (OSError, ValueError) as exc:
             ap.error(str(exc))
         print(f"Writing {args.out}...", file=sys.stderr, flush=True)

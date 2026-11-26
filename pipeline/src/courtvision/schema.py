@@ -7,3 +7,6 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
+SCHEMA_VERSION = "0.1.0"
+
+Keypoint = tuple[float, float, float]  # x, y, confidence

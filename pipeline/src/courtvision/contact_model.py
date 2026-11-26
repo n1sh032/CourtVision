@@ -31,3 +31,12 @@ class ContactModel(BaseModel):
     mean: Vector
     scale: Vector
     weight: Vector
+    intercept: FiniteFloat
+
+    def accepts(self, features: Vector) -> bool:
+        return self.intercept + sum(
+            w * (x - m) / (s or 1)
+            for x, m, s, w in zip(features, self.mean, self.scale, self.weight)
+        ) >= 0
+
+

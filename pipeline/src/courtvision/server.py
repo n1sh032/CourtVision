@@ -107,12 +107,6 @@ def serve(
                     result = service.run(
                         source, self.path.endswith("profile=broad"), self.send_event,
                     )
-                    def on_frame(frame):
-                        frames.append(frame)
-                        if frame.index == 0 or frame.index % 15 == 0:
-                            self.send_event({"status": f"Processed {frame.index + 1} frames…"})
-
-                    result = track.run(source, model_name=model, device=device, on_frame=on_frame)
                     result.frames = frames
                     self.send_event({"status": "Finding contact candidates…"})
                     if self.path.endswith("profile=broad"):

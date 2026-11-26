@@ -67,3 +67,12 @@ def features(result: ClipResult, event: ContactEvent) -> Vector:
                         nearest = min(nearest, point_segment_distance(wrist[:2], start[:2], end[:2]) / height)
         distances.append(nearest)
     span = event.end_frame - event.start_frame + 1
+    return (
+        span / result.video.fps,
+        event.hit_frames / span,
+        min(distances, default=1.0),
+        statistics.median(distances) if distances else 1.0,
+        statistics.median(height_ratios) if height_ratios else 0.0,
+    )
+
+

@@ -37,3 +37,6 @@ def run(
         file=sys.stderr,
         flush=True,
     )
+    model = YOLO(model_name)
+    frames: list[Frame] = []
+    started = time.perf_counter()

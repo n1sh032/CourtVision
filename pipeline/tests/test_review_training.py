@@ -19,3 +19,9 @@ def clip(name, annotated_frames, *, target_left=42, visible=True):
         Frame(index=i, t=i / 30, players=[player(1, 0), player(2, target_left, visible=visible)])
         for i in range(annotated_frames)
     ]
+    return ClipResult(
+        video=VideoMeta(source=name, fps=30, width=200, height=100, n_frames=len(frames)),
+        frames=frames,
+    )
+
+

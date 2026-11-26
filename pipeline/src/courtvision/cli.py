@@ -28,3 +28,6 @@ def main(argv: list[str] | None = None) -> None:
         from . import track
 
         result = track.run(args.video, model_name=args.model, device=args.device)
+        print(f"Writing {args.out}...", file=sys.stderr, flush=True)
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(result.model_dump_json())

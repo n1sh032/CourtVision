@@ -38,6 +38,9 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--viewer-dir", type=Path, default=Path("viewer"))
     p.add_argument("--contact-model", type=Path, help="trained event classifier JSON")
 
+    p = sub.add_parser("train-contacts", help="train an event classifier from viewer exports")
+    p.add_argument("reviews", type=Path, nargs="+")
+    p.add_argument("-o", "--out", type=Path, required=True)
     args = ap.parse_args(argv)
     if args.out.exists() or args.out.is_symlink():
         ap.error(f"output already exists: {args.out}")

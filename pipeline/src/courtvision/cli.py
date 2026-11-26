@@ -67,7 +67,11 @@ def main(argv: list[str] | None = None) -> None:
             args.out.parent.mkdir(parents=True, exist_ok=True)
             with TemporaryDirectory(dir=args.out.parent) as folder:
                 temp = Path(folder) / "overlay.mp4"
-                overlay.render(args.video, result, temp)
+                frames = read_frames(args.json)
+                try:
+                    overlay.render_frames(args.video, metadata, frames, temp)
+                finally:
+                    frames.close()
                 temp.rename(args.out)
         except (OSError, ValueError) as exc:
             ap.error(str(exc))

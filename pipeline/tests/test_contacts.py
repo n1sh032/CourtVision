@@ -169,3 +169,6 @@ def test_multiple_witnesses_still_count_once_per_pair_per_frame():
     assert single(players)[0].hit_frames == 1
     assert not detect(clip([Frame(index=0, t=0, players=players)]), min_hit_frames=2)
 
+
+def test_same_track_id_never_contacts_itself():
+    players = pair()

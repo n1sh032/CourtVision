@@ -13,3 +13,6 @@ def test_service_preserves_streamed_frames_and_reports_progress(monkeypatch):
             video=VideoMeta(source="clip.mp4", fps=30, width=640, height=360, n_frames=1),
             frames=[],
         )
+
+    monkeypatch.setattr(track, "run", fake_run)
+    updates = []

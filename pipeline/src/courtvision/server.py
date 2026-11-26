@@ -22,3 +22,9 @@ def serve(
 ) -> None:
     if not all((viewer / name).is_file() for name, _ in ASSETS.values()):
         raise ValueError(f"Viewer files not found in {viewer}. Run from the repository root.")
+    job = Lock()
+    classifier = None
+    if contact_model is not None:
+        from .contact_model import ContactModel
+
+        classifier = ContactModel.model_validate_json(contact_model.read_bytes())

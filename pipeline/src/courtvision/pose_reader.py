@@ -13,3 +13,6 @@ def read_metadata(path: Path) -> VideoMeta:
         metadata = next(ijson.items(file, "video"), None)
     if version != SCHEMA_VERSION:
         raise ValueError(f"Unsupported pose schema: {version}")
+    return VideoMeta.model_validate(metadata)
+
+

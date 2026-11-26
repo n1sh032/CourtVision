@@ -238,3 +238,6 @@ def test_pairs_merge_independently_and_output_is_sorted():
                 player.track_id += 2
                 x1, y1, x2, y2 = player.bbox
                 player.bbox = (x1 + 200, y1, x2 + 200, y2)
+                player.keypoints = [(x + 200, y, c) for x, y, c in player.keypoints]
+                players.insert(0, player)
+        frames.append(Frame(index=index, t=index / 30, players=players))

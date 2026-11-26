@@ -109,3 +109,6 @@ def test_corner_touch_is_inclusive():
     players = pair(0)
     players[0].keypoints[9] = (50, 100, 1)
     players[1].bbox = (50, 100, 100, 200)
+    players[1].keypoints[5] = (50, 100, 1)
+    players[1].keypoints[11] = (50, 180, 1)
+    assert len(single(players)) == 1

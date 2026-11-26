@@ -124,3 +124,5 @@ def train(paths: list[Path]) -> tuple[ContactModel, dict]:
         for clip, x, y in rows:
             if clip == holdout:
                 key = (("tn", "fp"), ("fn", "tp"))[y][model.accepts(x)]
+                report[key] += 1
+    return fit(rows), report

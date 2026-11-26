@@ -41,7 +41,7 @@ def render_frames(
     try:
         if not writer.isOpened():
             raise ValueError(f"Cannot open MP4 writer: {out_path}")
-        by_index = {f.index: f for f in result.frames}
+        records = iter(frames)
         i = 0
         while True:
             ok, img = cap.read()

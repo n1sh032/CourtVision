@@ -25,3 +25,12 @@ def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> 
         ok, img = cap.read()
         if not ok:
             break
+        frame = by_index.get(i)
+        if frame:
+            for p in frame.players:
+                x1, y1, x2, y2 = map(int, p.bbox)
+                cv2.rectangle(img, (x1, y1), (x2, y2), (0, 200, 0), 2)
+                cv2.putText(img, f"#{p.track_id}", (x1, max(15, y1 - 6)),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 200, 0), 2)
+                for a, b in SKELETON:
+                    (xa, ya, ca), (xb, yb, cb) = p.keypoints[a], p.keypoints[b]

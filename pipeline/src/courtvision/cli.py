@@ -19,3 +19,6 @@ def main(argv: list[str] | None = None) -> None:
 
     p = sub.add_parser("overlay", help="render an annotated video from saved JSON")
     p.add_argument("video", type=Path)
+    p.add_argument("json", type=Path)
+    p.add_argument("-o", "--out", type=Path, required=True)
+

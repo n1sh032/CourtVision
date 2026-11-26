@@ -82,3 +82,9 @@ def train(paths: list[Path]) -> tuple[ContactModel, dict]:
         from sklearn.preprocessing import StandardScaler
     except ImportError as exc:
         raise ValueError('Install training dependencies with pip install -e "./pipeline[train]"') from exc
+
+    samples = {}
+    for path in paths:
+        review = Review.model_validate_json(path.read_bytes())
+        result = review.result
+        clip = result.video.source_sha256 or result.video.source

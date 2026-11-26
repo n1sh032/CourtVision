@@ -28,3 +28,6 @@ class PlayerFrame(BaseModel):
 
 class Frame(BaseModel):
     index: int
+    t: float  # seconds
+    players: list[PlayerFrame]
+

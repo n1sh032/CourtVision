@@ -178,3 +178,6 @@ def test_same_track_id_never_contacts_itself():
 
 def test_consecutive_hits_have_inclusive_frame_and_time_bounds():
     (event,) = detect(sequence({10, 11, 12}))
+    assert (event.start_frame, event.end_frame, event.hit_frames) == (10, 12, 3)
+    assert event.start_t == pytest.approx(10 / 30)
+    assert event.end_t == pytest.approx(12 / 30)

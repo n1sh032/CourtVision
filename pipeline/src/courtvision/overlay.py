@@ -10,3 +10,6 @@ SKELETON = [
     (11, 13), (13, 15), (12, 14), (14, 16),
 ]  # fmt: skip
 
+
+def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> None:
+    import cv2

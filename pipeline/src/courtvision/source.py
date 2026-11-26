@@ -7,3 +7,4 @@ def fingerprint(path: Path) -> str:
     with path.open("rb") as file:
         for chunk in iter(lambda: file.read(1024 * 1024), b""):
             digest.update(chunk)
+    return digest.hexdigest()

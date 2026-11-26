@@ -55,9 +55,6 @@ def main(argv: list[str] | None = None) -> None:
         except (OSError, ValueError) as exc:
             ap.error(str(exc))
         print(f"{result.video.n_frames} frames, {detections} player detections, {len(ids)} unique track IDs")
-        n = sum(len(f.players) for f in result.frames)
-        ids = {p.track_id for f in result.frames for p in f.players}
-        print(f"{len(result.frames)} frames, {n} player detections, {len(ids)} unique track IDs")
     else:
         from . import overlay
 

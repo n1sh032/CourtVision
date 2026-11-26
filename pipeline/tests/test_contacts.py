@@ -229,3 +229,12 @@ def test_track_id_changes_split_history():
     ]
 
 
+def test_pairs_merge_independently_and_output_is_sorted():
+    frames = []
+    for index in range(4):
+        players = pair() if index < 3 else []
+        if index > 0:
+            for player in pair():
+                player.track_id += 2
+                x1, y1, x2, y2 = player.bbox
+                player.bbox = (x1 + 200, y1, x2 + 200, y2)

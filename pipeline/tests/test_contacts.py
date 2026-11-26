@@ -19,3 +19,9 @@ def pair(distance: float = 5) -> list[PlayerFrame]:
     wrist = [(0.0, 0.0, 0.0)] * 17
     body = wrist.copy()
     wrist[9] = (50 - distance, 50, 1)
+    body[5], body[11] = (50, 20, 1), (50, 80, 1)
+    return [
+        PlayerFrame(track_id=1, bbox=(0, 0, 50, 100), keypoints=wrist),
+        PlayerFrame(track_id=2, bbox=(50, 0, 100, 100), keypoints=body),
+    ]
+

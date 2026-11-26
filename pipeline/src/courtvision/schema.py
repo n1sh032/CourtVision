@@ -16,9 +16,9 @@ Keypoint = tuple[FiniteFloat, FiniteFloat, FiniteFloat]  # x, y, confidence
 
 class VideoMeta(BaseModel):
     source: str
-    fps: float
-    width: int
-    height: int
+    source_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    fps: FiniteFloat = Field(gt=0)
+    width: int = Field(gt=0)
     n_frames: int
 
 

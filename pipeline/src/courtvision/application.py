@@ -22,3 +22,6 @@ class DetectionService:
         progress({"status": "Loading pose model…"})
         result = track.run(source, model_name=self.model, device=self.device, on_frame=on_frame)
         result.frames = frames
+        progress({"status": "Finding contact candidates…"})
+        if broad:
+            result.contacts = detect(result)

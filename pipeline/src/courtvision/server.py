@@ -30,6 +30,7 @@ def serve(
         from .contact_model import ContactModel
 
         classifier = ContactModel.model_validate_json(contact_model.read_bytes())
+    service = DetectionService(model, device, classifier)
 
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):

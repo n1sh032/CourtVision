@@ -49,3 +49,6 @@ def test_exported_reviews_train_with_clip_holdouts(tmp_path):
             Label(event_index=1, label="contact"),
         ])
         path = tmp_path / f"{name}.json"
+        path.write_text(review.model_dump_json(), encoding="utf-8")
+        paths.append(path)
+    model, report = train(paths)

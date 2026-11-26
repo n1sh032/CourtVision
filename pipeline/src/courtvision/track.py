@@ -104,7 +104,7 @@ def run(
     return ClipResult(
         video=VideoMeta(
             source=video_path.name, source_sha256=source_sha256,
-            fps=fps, width=width, height=height, n_frames=len(frames)
+            fps=fps, width=width, height=height, n_frames=processed
         ),
         frames=frames,
     )

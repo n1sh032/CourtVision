@@ -16,3 +16,6 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("-o", "--out", type=Path, required=True)
     p.add_argument("--model", default="yolo11n-pose.pt")
     p.add_argument("--device", default=None)
+
+    p = sub.add_parser("overlay", help="render an annotated video from saved JSON")
+    p.add_argument("video", type=Path)

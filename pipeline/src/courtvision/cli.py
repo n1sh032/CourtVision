@@ -32,6 +32,9 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--max-gap-frames", type=int, default=2)
 
     p = sub.add_parser("serve", help="run detection and review from a local browser")
+    p.add_argument("--port", type=int, default=8000)
+    p.add_argument("--model", default="yolo11n-pose.pt")
+    p.add_argument("--device", default=None)
     args = ap.parse_args(argv)
     if args.out.exists() or args.out.is_symlink():
         ap.error(f"output already exists: {args.out}")

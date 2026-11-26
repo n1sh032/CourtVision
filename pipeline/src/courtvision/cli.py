@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from .schema import Frame
+from .schema import ClipResult, Frame
 
 
 def main(argv: list[str] | None = None) -> None:

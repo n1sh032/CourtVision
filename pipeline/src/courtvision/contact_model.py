@@ -7,3 +7,6 @@ from pathlib import Path
 from typing import Literal
 
 from pydantic import BaseModel, Field, FiniteFloat
+
+from .contact import BODY_SEGMENTS, WRISTS, _usable, _valid_box, point_segment_distance
+from .schema import ClipResult, ContactEvent

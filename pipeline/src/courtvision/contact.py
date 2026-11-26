@@ -160,3 +160,9 @@ def detect(
         for a, b in combinations(players, 2):
             if a.track_id == b.track_id or not _boxes_touch(a, b):
                 continue
+            if conservative and not _reviewable_pair(a, b, min_conf):
+                continue
+            if _wrist_near_body(a, b, distance_ratio, min_conf, conservative) or _wrist_near_body(
+                b, a, distance_ratio, min_conf, conservative,
+            ):
+                hits.add((min(a.track_id, b.track_id), max(a.track_id, b.track_id)))

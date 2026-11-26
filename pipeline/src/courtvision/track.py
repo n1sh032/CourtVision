@@ -85,3 +85,9 @@ def run(
             print(progress, file=sys.stderr, flush=True)
             last_report = now
 
+    return ClipResult(
+        video=VideoMeta(
+            source=video_path.name, fps=fps, width=width, height=height, n_frames=n_frames
+        ),
+        frames=frames,
+    )

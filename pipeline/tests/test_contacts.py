@@ -202,3 +202,9 @@ def test_gaps_use_frame_indices_even_when_frames_are_absent():
 def test_zero_gap_requires_consecutive_hits():
     events = detect(sequence({0, 1, 3, 4}), min_hit_frames=2, max_gap_frames=0)
     assert [(e.start_frame, e.end_frame) for e in events] == [(0, 1), (3, 4)]
+
+
+def test_short_flickers_are_removed_by_actual_hit_count():
+    assert not detect(sequence({0, 3}))  # span is four frames but only two hits
+    assert not detect(sequence({0}))
+    assert detect(sequence({0}), min_hit_frames=1)[0].hit_frames == 1

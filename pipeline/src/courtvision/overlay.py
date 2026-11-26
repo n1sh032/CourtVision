@@ -29,24 +29,32 @@ def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> 
     writer = cv2.VideoWriter(
         str(out_path), cv2.VideoWriter_fourcc(*"mp4v"), v.fps, (v.width, v.height)
     )
-    by_index = {f.index: f for f in result.frames}
-    i = 0
-    while True:
-        ok, img = cap.read()
-        if not ok:
-            break
-        frame = by_index.get(i)
-        if frame:
-            for p in frame.players:
-                x1, y1, x2, y2 = map(int, p.bbox)
-                cv2.rectangle(img, (x1, y1), (x2, y2), (0, 200, 0), 2)
-                cv2.putText(img, f"#{p.track_id}", (x1, max(15, y1 - 6)),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 200, 0), 2)
-                for a, b in SKELETON:
-                    (xa, ya, ca), (xb, yb, cb) = p.keypoints[a], p.keypoints[b]
-                    if min(ca, cb) > 0.3:
-                        cv2.line(img, (int(xa), int(ya)), (int(xb), int(yb)), (0, 200, 0), 2)
-        writer.write(img)
-        i += 1
-    cap.release()
-    writer.release()
+    try:
+        if not writer.isOpened():
+            raise ValueError(f"Cannot open MP4 writer: {out_path}")
+        by_index = {f.index: f for f in result.frames}
+        i = 0
+        while True:
+            ok, img = cap.read()
+            if not ok:
+                break
+            if img.shape[:2] != (v.height, v.width):
+                raise ValueError("Video dimensions differ from pose JSON")
+            frame = by_index.get(i)
+            if frame:
+                for p in frame.players:
+                    x1, y1, x2, y2 = map(int, p.bbox)
+                    cv2.rectangle(img, (x1, y1), (x2, y2), (0, 200, 0), 2)
+                    cv2.putText(img, f"#{p.track_id}", (x1, max(15, y1 - 6)),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 200, 0), 2)
+                    for a, b in SKELETON:
+                        (xa, ya, ca), (xb, yb, cb) = p.keypoints[a], p.keypoints[b]
+                        if min(ca, cb) > 0.3:
+                            cv2.line(img, (int(xa), int(ya)), (int(xb), int(yb)), (0, 200, 0), 2)
+            writer.write(img)
+            i += 1
+        if not i or i != len(result.frames):
+            raise ValueError("Decoded frame count differs from pose JSON")
+    finally:
+        cap.release()
+        writer.release()

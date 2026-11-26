@@ -43,3 +43,9 @@ class ContactModel(BaseModel):
 def features(result: ClipResult, event: ContactEvent) -> Vector:
     distances = []
     height_ratios = []
+    track_a, track_b = event.track_ids
+    for frame in result.frames:
+        if frame.index < event.start_frame:
+            continue
+        if frame.index > event.end_frame:
+            break

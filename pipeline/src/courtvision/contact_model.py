@@ -19,3 +19,6 @@ class Label(BaseModel):
 
 class Review(BaseModel):
     version: Literal[1]
+    result: ClipResult
+    labels: list[Label]
+

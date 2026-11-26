@@ -139,3 +139,9 @@ def test_torso_arm_and_leg_segments_are_checked(edge):
     a, b = edge
     players[1].keypoints[a], players[1].keypoints[b] = (50, 20, 1), (50, 80, 1)
     assert len(single(players)) == 1
+
+
+@pytest.mark.parametrize("wrist", [9, 10])
+@pytest.mark.parametrize("reverse_order", [False, True])
+def test_both_wrists_and_both_player_directions(wrist, reverse_order):
+    players = pair()

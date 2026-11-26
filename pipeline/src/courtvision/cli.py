@@ -37,3 +37,6 @@ def main(argv: list[str] | None = None) -> None:
     else:
         from . import overlay
 
+        result = ClipResult.model_validate_json(args.json.read_text())
+        overlay.render(args.video, result, args.out)
+        print(f"wrote {args.out}")

@@ -124,3 +124,6 @@ def serve(
                 raise
             except (OSError, ValueError, RuntimeError, ImportError) as exc:
                 self.send_event({"error": str(exc) or type(exc).__name__})
+            except Exception:
+                logger.exception("Unexpected detection failure")
+                self.send_event({"error": "Unexpected error. See the CourtVision terminal."})

@@ -46,3 +46,6 @@ def serve(
         def do_POST(self):
             if self.path not in {"/detect", "/detect?profile=broad"}:
                 self.send_error(404)
+                return
+            origin = self.headers.get("Origin")
+            expected = f"http://127.0.0.1:{self.server.server_port}"

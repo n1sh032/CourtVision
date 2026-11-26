@@ -34,6 +34,12 @@ def serve(
 
     class Handler(BaseHTTPRequestHandler):
         def do_GET(self):
+            if self.headers.get("Host") not in {
+                f"courtvision.localhost:{self.server.server_port}",
+                f"127.0.0.1:{self.server.server_port}",
+            }:
+                self.send_error(403, "Use the address printed by CourtVision")
+                return
             asset = ASSETS.get(self.path)
             if not asset:
                 self.send_error(404)

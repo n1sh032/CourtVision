@@ -73,3 +73,6 @@ def serve(
             self.wfile.write(json.dumps(event, separators=(",", ":")).encode() + b"\n")
             self.wfile.flush()
 
+        def run_detection(self, size):
+            self.send_response(200)
+            self.send_header("Content-Type", "application/x-ndjson; charset=utf-8")

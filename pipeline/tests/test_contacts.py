@@ -136,3 +136,6 @@ def test_nonfinite_keypoints_are_ignored(player_index, joint, coordinate):
 def test_torso_arm_and_leg_segments_are_checked(edge):
     players = pair()
     players[1].keypoints = [(0, 0, 0)] * 17
+    a, b = edge
+    players[1].keypoints[a], players[1].keypoints[b] = (50, 20, 1), (50, 80, 1)
+    assert len(single(players)) == 1

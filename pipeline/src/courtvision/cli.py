@@ -32,7 +32,9 @@ def main(argv: list[str] | None = None) -> None:
         detections = 0
         ids: set[int] = set()
         try:
-            result = track.run(args.video, model_name=args.model, device=args.device)
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            with TemporaryDirectory(dir=args.out.parent) as folder:
+                temp = Path(folder) / "pose.json"
         except (OSError, ValueError) as exc:
             ap.error(str(exc))
         print(f"Writing {args.out}...", file=sys.stderr, flush=True)

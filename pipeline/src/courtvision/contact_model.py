@@ -118,3 +118,6 @@ def train(paths: list[Path]) -> tuple[ContactModel, dict]:
     report = {"clips": len(clips), "labels": len(rows), "tp": 0, "fp": 0, "tn": 0, "fn": 0}
     for holdout in clips:
         training = [row for row in rows if row[0] != holdout]
+        if {y for _, _, y in training} != {0, 1}:
+            raise ValueError("Label both classes across multiple clips so held-out clips can be evaluated")
+        model = fit(training)

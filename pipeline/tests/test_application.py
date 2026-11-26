@@ -19,3 +19,4 @@ def test_service_preserves_streamed_frames_and_reports_progress(monkeypatch):
     result = DetectionService("pose.pt", "cpu").run(Path("clip.mp4"), False, updates.append)
     assert len(result.frames) == 1
     assert result.contacts == []
+    assert updates[-1]["status"] == "Finding contact candidates…"

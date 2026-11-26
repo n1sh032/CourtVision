@@ -29,6 +29,8 @@ def main(argv: list[str] | None = None) -> None:
     if args.cmd == "process":
         from . import track
 
+        detections = 0
+        ids: set[int] = set()
         try:
             result = track.run(args.video, model_name=args.model, device=args.device)
         except (OSError, ValueError) as exc:

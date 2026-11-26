@@ -55,3 +55,9 @@ def features(result: ClipResult, event: ContactEvent) -> Vector:
         a, b = players[track_a], players[track_b]
         ha, hb = a.bbox[3] - a.bbox[1], b.bbox[3] - b.bbox[1]
         height_ratios.append(min(ha, hb) / max(ha, hb))
+        nearest = 1.0
+        for source, target, height in ((a, b, hb), (b, a, ha)):
+            for i in WRISTS:
+                wrist = source.keypoints[i]
+                if not _usable(wrist, 0.3):
+                    continue

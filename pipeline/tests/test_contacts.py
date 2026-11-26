@@ -166,3 +166,6 @@ def test_multiple_witnesses_still_count_once_per_pair_per_frame():
     players = pair()
     players[0].keypoints[10] = (45, 51, 1)
     players[1].keypoints[6] = (50, 20, 1)
+    assert single(players)[0].hit_frames == 1
+    assert not detect(clip([Frame(index=0, t=0, players=players)]), min_hit_frames=2)
+

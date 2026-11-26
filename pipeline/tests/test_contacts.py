@@ -160,3 +160,9 @@ def test_only_wrists_start_a_hit_and_face_edges_are_excluded():
     players[1].keypoints = [(0, 0, 0)] * 17
     players[1].keypoints[0], players[1].keypoints[1] = (50, 20, 1), (50, 80, 1)
     assert not single(players)
+
+
+def test_multiple_witnesses_still_count_once_per_pair_per_frame():
+    players = pair()
+    players[0].keypoints[10] = (45, 51, 1)
+    players[1].keypoints[6] = (50, 20, 1)

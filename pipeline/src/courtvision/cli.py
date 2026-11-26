@@ -116,6 +116,9 @@ def main(argv: list[str] | None = None) -> None:
         except (OSError, ValueError, JSONError) as exc:
             ap.error(str(exc))
         print(f"wrote {args.out}")
+    else:
+        from .contact import detect
+
 
 
 if __name__ == "__main__":

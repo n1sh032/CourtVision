@@ -112,3 +112,9 @@ def test_corner_touch_is_inclusive():
     players[1].keypoints[5] = (50, 100, 1)
     players[1].keypoints[11] = (50, 180, 1)
     assert len(single(players)) == 1
+
+
+@pytest.mark.parametrize(("player_index", "joint"), [(0, 9), (1, 5), (1, 11)])
+@pytest.mark.parametrize("confidence", [0, 0.3, math.nan, math.inf, 1.01])
+def test_wrist_and_both_endpoints_need_confidence(player_index, joint, confidence):
+    players = pair()

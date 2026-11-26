@@ -13,3 +13,6 @@ class DetectionService:
         from .contact import detect, detect_for_review
 
         frames = []
+
+        def on_frame(frame):
+            frames.append(frame)

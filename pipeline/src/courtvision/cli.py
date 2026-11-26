@@ -119,6 +119,23 @@ def main(argv: list[str] | None = None) -> None:
     else:
         from .contact import detect
 
+        try:
+            result = ClipResult.model_validate_json(args.json.read_bytes())
+            result.contacts = detect(
+                result,
+                distance_ratio=args.distance_ratio,
+                min_conf=args.min_conf,
+                min_hit_frames=args.min_hit_frames,
+                max_gap_frames=args.max_gap_frames,
+            )
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            with TemporaryDirectory(dir=args.out.parent) as folder:
+                temp = Path(folder) / "contacts.json"
+                temp.write_text(result.model_dump_json(), encoding="utf-8")
+                temp.rename(args.out)
+        except (OSError, ValueError) as exc:
+            ap.error(str(exc))
+        print(f"{len(result.contacts)} candidate contact events; wrote {args.out}")
 
 
 if __name__ == "__main__":

@@ -31,3 +31,6 @@ class Frame(BaseModel):
     t: float  # seconds
     players: list[PlayerFrame]
 
+
+class ClipResult(BaseModel):
+    schema_version: str = SCHEMA_VERSION

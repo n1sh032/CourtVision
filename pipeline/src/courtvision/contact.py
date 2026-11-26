@@ -145,3 +145,9 @@ def detect(
             raise ValueError(
                 "frame indices must be nonnegative and strictly increasing"
             )
+        if not math.isfinite(frame.t) or frame.t < 0 or frame.t < previous_t:
+            raise ValueError(
+                "frame times must be finite, nonnegative, and nondecreasing"
+            )
+        previous_index, previous_t = frame.index, frame.t
+

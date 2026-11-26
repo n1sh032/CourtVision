@@ -19,3 +19,6 @@ class VideoMeta(BaseModel):
     height: int
     n_frames: int
 
+
+class PlayerFrame(BaseModel):
+    track_id: int

@@ -10,3 +10,6 @@ from dataclasses import dataclass
 from itertools import combinations
 
 from .schema import ClipResult, ContactEvent, Keypoint, PlayerFrame
+
+Point = tuple[float, float]
+TrackPair = tuple[int, int]

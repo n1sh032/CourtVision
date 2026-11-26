@@ -47,6 +47,12 @@ class ContactEvent(BaseModel):
     def validate_interval(self) -> ContactEvent:
         if self.track_ids[0] >= self.track_ids[1]:
             raise ValueError("track_ids must be distinct and in ascending order")
+        if self.end_frame < self.start_frame or self.end_t < self.start_t:
+            raise ValueError("event end must not precede its start")
+        if self.hit_frames > self.end_frame - self.start_frame + 1:
+            raise ValueError("hit_frames cannot exceed the event's frame span")
+        return self
+
 class ClipResult(BaseModel):
     schema_version: Literal["0.1.0"] = SCHEMA_VERSION
     video: VideoMeta

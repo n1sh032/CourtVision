@@ -79,6 +79,8 @@ def run(
         frame = Frame(index=i, t=i / fps, players=players)
         if on_frame is None:
             frames.append(frame)
+        else:
+            on_frame(frame)
         now = time.perf_counter()
         processed = i + 1
         if processed == 1 or now - last_report >= 5 or processed == n_frames:

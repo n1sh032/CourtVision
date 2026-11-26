@@ -76,3 +76,9 @@ def run(
                 progress = f"1{total} frames; first frame ready, estimating speed..."
             elif n_frames > 0:
                 remaining = max(n_frames - processed, 0) / rate
+                progress = (
+                    f"{processed}/{n_frames} frames ({processed / n_frames:.1%}), "
+                    f"{rate:.1f} frames/s, ~{remaining / 60:.1f} min remaining"
+                )
+            else:
+                progress = f"{processed} frames, {rate:.1f} frames/s"

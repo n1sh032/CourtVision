@@ -91,3 +91,6 @@ def _reviewable_pair(a: PlayerFrame, b: PlayerFrame, min_conf: float) -> bool:
     heights = [p.bbox[3] - p.bbox[1] for p in (a, b)]
     if min(heights) / max(heights) < 0.6:
         return False
+    return all(sum(_usable(p.keypoints[i], min_conf) for i in TORSO) >= 3 for p in (a, b))
+
+

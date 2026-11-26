@@ -34,3 +34,6 @@ def main(argv: list[str] | None = None) -> None:
         n = sum(len(f.players) for f in result.frames)
         ids = {p.track_id for f in result.frames for p in f.players}
         print(f"{len(result.frames)} frames, {n} player detections, {len(ids)} unique track IDs")
+    else:
+        from . import overlay
+

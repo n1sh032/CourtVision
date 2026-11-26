@@ -13,3 +13,6 @@ SKELETON = [
 
 def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> None:
     import cv2
+
+    cap = cv2.VideoCapture(str(video_path))
+    v = result.video

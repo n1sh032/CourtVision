@@ -334,3 +334,6 @@ def test_contact_event_contract_rejects_invalid_intervals(update):
 def test_contacts_cli_preserves_poses_and_replaces_existing_events(tmp_path, capsys):
     result = sequence({0, 3, 4})
     source, target = tmp_path / "poses.json", tmp_path / "nested" / "contacts.json"
+    source.write_text(result.model_dump_json(), encoding="utf-8")
+    main(["contacts", str(source), "-o", str(target)])
+    saved = ClipResult.model_validate_json(target.read_text(encoding="utf-8"))

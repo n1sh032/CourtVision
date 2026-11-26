@@ -85,3 +85,21 @@ def test_distance_scales_with_target_height_not_wrist_owner():
     players[1].bbox = (50, 0, 100, 200)
     assert len(single(players)) == 1  # target height 200: threshold 16
 
+
+@pytest.mark.parametrize(
+    ("bbox", "expected"),
+    [
+        ((50, 0, 100, 100), 1),  # shared edge
+        ((45, 0, 100, 100), 1),  # overlap
+        ((50.01, 0, 100, 100), 0),
+        ((50, 100.01, 100, 200), 0),
+        ((50, 0, 100, 0), 0),  # no height
+        ((100, 0, 50, 100), 0),  # inverted width
+        ((50, 0, math.inf, 100), 0),
+        ((math.nan, 0, 100, 100), 0),
+    ],
+)
+def test_boxes_must_be_valid_and_touch(bbox, expected):
+    players = pair()
+    players[1].bbox = bbox
+    assert len(single(players)) == expected

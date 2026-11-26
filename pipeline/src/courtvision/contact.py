@@ -154,3 +154,6 @@ def detect(
         for pair in list(active):
             if frame.index - active[pair].end_frame > max_gap_frames + 1:
                 finish(pair)
+
+        hits: set[TrackPair] = set()
+        players = [player for player in frame.players if _valid_box(player)]

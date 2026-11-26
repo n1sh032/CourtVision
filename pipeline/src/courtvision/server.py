@@ -52,3 +52,9 @@ def serve(
             if origin != expected or self.headers.get("Host") != expected.removeprefix("http://"):
                 self.send_error(403, "Open the viewer using the address printed by CourtVision")
                 return
+            try:
+                size = int(self.headers.get("Content-Length", "0"))
+            except ValueError:
+                size = 0
+            if not 0 < size <= MAX_CLIP_BYTES:
+                self.send_error(413, "Choose a clip no larger than 200 MiB")

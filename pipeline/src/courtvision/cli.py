@@ -40,3 +40,7 @@ def main(argv: list[str] | None = None) -> None:
         result = ClipResult.model_validate_json(args.json.read_text())
         overlay.render(args.video, result, args.out)
         print(f"wrote {args.out}")
+
+
+if __name__ == "__main__":
+    main()

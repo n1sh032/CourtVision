@@ -35,6 +35,9 @@ class Frame(BaseModel):
     players: list[PlayerFrame]
 
 
+class ContactEvent(BaseModel):
+    track_ids: tuple[int, int]
+    start_frame: int = Field(ge=0)
 class ClipResult(BaseModel):
     schema_version: Literal["0.1.0"] = SCHEMA_VERSION
     video: VideoMeta

@@ -166,3 +166,9 @@ def detect(
                 b, a, distance_ratio, min_conf, conservative,
             ):
                 hits.add((min(a.track_id, b.track_id), max(a.track_id, b.track_id)))
+
+        for pair in hits:
+            if pair in active:
+                pending = active[pair]
+                pending.end_frame, pending.end_t = frame.index, frame.t
+                pending.hit_frames += 1

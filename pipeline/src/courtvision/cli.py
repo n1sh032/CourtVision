@@ -41,6 +41,7 @@ def main(argv: list[str] | None = None) -> None:
     p = sub.add_parser("train-contacts", help="train an event classifier from viewer exports")
     p.add_argument("reviews", type=Path, nargs="+")
     p.add_argument("-o", "--out", type=Path, required=True)
+
     args = ap.parse_args(argv)
     if args.out.exists() or args.out.is_symlink():
         ap.error(f"output already exists: {args.out}")

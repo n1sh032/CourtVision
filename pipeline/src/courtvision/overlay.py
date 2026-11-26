@@ -64,7 +64,7 @@ def render_frames(
                             cv2.line(img, (int(xa), int(ya)), (int(xb), int(yb)), (0, 200, 0), 2)
             writer.write(img)
             i += 1
-        if not i or i != len(result.frames):
+        if not i or next(records, None) is not None:
             raise ValueError("Decoded frame count differs from pose JSON")
     finally:
         cap.release()

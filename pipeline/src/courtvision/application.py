@@ -25,3 +25,12 @@ class DetectionService:
         progress({"status": "Finding contact candidates…"})
         if broad:
             result.contacts = detect(result)
+        elif self.classifier is None:
+            result.contacts = detect_for_review(result)
+        else:
+            from .contact_model import features
+
+            result.contacts = [
+                event for event in detect(result)
+                if self.classifier.accepts(features(result, event))
+            ]

@@ -130,3 +130,9 @@ def test_nonfinite_keypoints_are_ignored(player_index, joint, coordinate):
     _, y, confidence = players[player_index].keypoints[joint]
     players[player_index].keypoints[joint] = (coordinate, y, confidence)
     assert not single(players)
+
+
+@pytest.mark.parametrize("edge", BODY_SEGMENTS)
+def test_torso_arm_and_leg_segments_are_checked(edge):
+    players = pair()
+    players[1].keypoints = [(0, 0, 0)] * 17

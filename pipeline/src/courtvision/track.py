@@ -92,7 +92,7 @@ def run(
         raise ValueError(f"No video frames decoded: {video_path}")
     return ClipResult(
         video=VideoMeta(
-            source=video_path.name, fps=fps, width=width, height=height, n_frames=n_frames
+            source=video_path.name, fps=fps, width=width, height=height, n_frames=len(frames)
         ),
         frames=frames,
     )

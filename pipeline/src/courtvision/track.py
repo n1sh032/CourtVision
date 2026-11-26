@@ -58,3 +58,12 @@ def run(
             ids = r.boxes.id.int().tolist()
             boxes = r.boxes.xyxy.tolist()
             kps = r.keypoints.data.tolist()
+            for tid, box, kp in zip(ids, boxes, kps):
+                players.append(
+                    PlayerFrame(
+                        track_id=tid,
+                        bbox=tuple(box),
+                        keypoints=[tuple(p) for p in kp],
+                    )
+                )
+        frames.append(Frame(index=i, t=i / fps, players=players))

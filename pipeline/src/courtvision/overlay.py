@@ -19,3 +19,9 @@ def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> 
     writer = cv2.VideoWriter(
         str(out_path), cv2.VideoWriter_fourcc(*"mp4v"), v.fps, (v.width, v.height)
     )
+    by_index = {f.index: f for f in result.frames}
+    i = 0
+    while True:
+        ok, img = cap.read()
+        if not ok:
+            break

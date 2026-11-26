@@ -223,3 +223,9 @@ def test_track_id_changes_split_history():
         players[0].track_id = 1 if index < 2 else 9
         frames.append(Frame(index=index, t=index / 30, players=players))
     events = detect(clip(frames), min_hit_frames=2)
+    assert [(e.track_ids, e.start_frame, e.end_frame) for e in events] == [
+        ((1, 2), 0, 1),
+        ((2, 9), 2, 3),
+    ]
+
+

@@ -48,6 +48,7 @@ def run(
     )
     model = YOLO(model_name)
     frames: list[Frame] = []
+    processed = 0
     started = time.perf_counter()
     last_report = started
     print("Starting tracking; waiting for the first frame...", file=sys.stderr, flush=True)

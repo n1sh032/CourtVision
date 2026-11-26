@@ -34,3 +34,6 @@ def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 200, 0), 2)
                 for a, b in SKELETON:
                     (xa, ya, ca), (xb, yb, cb) = p.keypoints[a], p.keypoints[b]
+                    if min(ca, cb) > 0.3:
+                        cv2.line(img, (int(xa), int(ya)), (int(xb), int(yb)), (0, 200, 0), 2)
+        writer.write(img)

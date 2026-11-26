@@ -73,3 +73,6 @@ def test_inclusive_distance_threshold(distance, expected):
     assert len(single(pair(distance))) == expected
 
 
+def test_zero_distance_threshold_is_supported():
+    assert len(single(pair(0), distance_ratio=0)) == 1
+    assert not single(pair(0.01), distance_ratio=0)

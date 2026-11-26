@@ -25,3 +25,15 @@ def pair(distance: float = 5) -> list[PlayerFrame]:
         PlayerFrame(track_id=2, bbox=(50, 0, 100, 100), keypoints=body),
     ]
 
+
+def clip(frames: list[Frame]) -> ClipResult:
+    return ClipResult(
+        video=VideoMeta(
+            source="synthetic.mp4",
+            fps=30,
+            width=640,
+            height=360,
+            n_frames=max((frame.index for frame in frames), default=-1) + 1,
+        ),
+        frames=frames,
+    )

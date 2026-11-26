@@ -19,3 +19,6 @@ class DetectionService:
             if frame.index == 0 or frame.index % 15 == 0:
                 progress({"status": f"Processed {frame.index + 1} frames…"})
 
+        progress({"status": "Loading pose model…"})
+        result = track.run(source, model_name=self.model, device=self.device, on_frame=on_frame)
+        result.frames = frames

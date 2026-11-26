@@ -100,3 +100,12 @@ def train(paths: list[Path]) -> tuple[ContactModel, dict]:
                 raise ValueError(f"{path}: conflicting labels for the same event")
             samples[key] = (features(result, event), value)
 
+    rows = [(key[0], x, y) for key, (x, y) in samples.items()]
+    clips = sorted({clip for clip, _, _ in rows})
+    if len(clips) < 2 or {y for _, _, y in rows} != {0, 1}:
+        raise ValueError("Label visible contact and no contact across at least two different clips")
+
+    def fit(training):
+        x = [row[1] for row in training]
+        y = [row[2] for row in training]
+        scaler = StandardScaler().fit(x)

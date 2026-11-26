@@ -172,3 +172,6 @@ def test_multiple_witnesses_still_count_once_per_pair_per_frame():
 
 def test_same_track_id_never_contacts_itself():
     players = pair()
+    players[1].track_id = players[0].track_id
+    assert not single(players)
+

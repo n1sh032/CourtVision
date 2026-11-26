@@ -26,6 +26,9 @@ def main(argv: list[str] | None = None) -> None:
     p = sub.add_parser("contacts", help="find contact candidates in saved pose JSON")
     p.add_argument("json", type=Path)
     p.add_argument("-o", "--out", type=Path, required=True)
+    p.add_argument("--distance-ratio", type=float, default=0.08)
+    p.add_argument("--min-conf", type=float, default=0.3)
+    p.add_argument("--min-hit-frames", type=int, default=3)
     args = ap.parse_args(argv)
     if args.out.exists() or args.out.is_symlink():
         ap.error(f"output already exists: {args.out}")

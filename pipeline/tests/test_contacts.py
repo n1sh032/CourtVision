@@ -214,3 +214,9 @@ def test_empty_frames_and_single_players_have_no_events():
     assert not detect(sequence(set()))
     assert not detect(sequence(set(), [0, 1, 2]))
     assert not single(pair()[:1])
+
+
+def test_track_id_changes_split_history():
+    frames = []
+    for index in range(4):
+        players = pair()

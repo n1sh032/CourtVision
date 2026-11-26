@@ -304,3 +304,30 @@ def test_legacy_json_and_contact_json_round_trip():
     assert ClipResult.model_validate_json(result.model_dump_json()) == result
 
 
+@pytest.mark.parametrize(
+    "update",
+    [
+        {"track_ids": (2, 1)},
+        {"track_ids": (1, 1)},
+        {"start_frame": -1},
+        {"end_frame": 0},
+        {"start_t": -1},
+        {"end_t": 0},
+        {"end_t": math.inf},
+        {"hit_frames": 0},
+        {"hit_frames": 4},
+    ],
+)
+def test_contact_event_contract_rejects_invalid_intervals(update):
+    fields = {
+        "track_ids": (1, 2),
+        "start_frame": 1,
+        "end_frame": 3,
+        "start_t": 1 / 30,
+        "end_t": 3 / 30,
+        "hit_frames": 3,
+    }
+    with pytest.raises(ValidationError):
+        ContactEvent(**(fields | update))
+
+

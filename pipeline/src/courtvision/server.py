@@ -43,3 +43,6 @@ def serve(
             self.end_headers()
             self.wfile.write(content)
 
+        def do_POST(self):
+            if self.path not in {"/detect", "/detect?profile=broad"}:
+                self.send_error(404)

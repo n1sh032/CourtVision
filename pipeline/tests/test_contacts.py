@@ -199,3 +199,6 @@ def test_gaps_use_frame_indices_even_when_frames_are_absent():
     assert [(e.start_frame, e.end_frame) for e in events] == [(4, 5)]
 
 
+def test_zero_gap_requires_consecutive_hits():
+    events = detect(sequence({0, 1, 3, 4}), min_hit_frames=2, max_gap_frames=0)
+    assert [(e.start_frame, e.end_frame) for e in events] == [(0, 1), (3, 4)]

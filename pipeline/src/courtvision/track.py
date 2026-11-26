@@ -17,6 +17,7 @@ def run(
     conf: float = 0.25,
     tracker: str = "bytetrack.yaml",
     device: str | None = None,
+    on_frame: Callable[[Frame], None] | None = None,
 ) -> ClipResult:
     import cv2
     from ultralytics import YOLO

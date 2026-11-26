@@ -25,3 +25,6 @@ class PlayerFrame(BaseModel):
     bbox: tuple[float, float, float, float]
     keypoints: list[Keypoint] = Field(min_length=17, max_length=17)
 
+
+class Frame(BaseModel):
+    index: int

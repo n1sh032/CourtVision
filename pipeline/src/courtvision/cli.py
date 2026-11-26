@@ -54,7 +54,9 @@ def main(argv: list[str] | None = None) -> None:
     if args.out.exists() or args.out.is_symlink():
         ap.error(f"output already exists: {args.out}")
 
-    if args.cmd == "process":
+    if args.cmd == "train-contacts":
+        from .contact_model import train
+
         from . import track
 
         detections = 0

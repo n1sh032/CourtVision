@@ -18,6 +18,9 @@ def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> 
     video_path, out_path = Path(video_path), Path(out_path)
     if not video_path.is_file() or out_path.exists() or out_path.suffix.lower() != ".mp4":
         raise ValueError("Overlay needs an existing input file and a new .mp4 output")
+    v = result.video
+    if not math.isfinite(v.fps) or v.fps <= 0 or min(v.width, v.height) <= 0:
+        raise ValueError("Invalid video metadata in pose JSON")
     cap = cv2.VideoCapture(str(video_path))
     v = result.video
     writer = cv2.VideoWriter(

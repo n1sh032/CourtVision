@@ -34,3 +34,5 @@ class Frame(BaseModel):
 
 class ClipResult(BaseModel):
     schema_version: str = SCHEMA_VERSION
+    video: VideoMeta
+    frames: list[Frame]

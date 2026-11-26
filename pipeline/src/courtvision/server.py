@@ -61,3 +61,15 @@ def serve(
                 return
             if not job.acquire(blocking=False):
                 self.send_error(409, "Detection is already running")
+                return
+            try:
+                self.run_detection(size)
+            except (BrokenPipeError, ConnectionResetError):
+                pass
+            finally:
+                job.release()
+
+        def send_event(self, event):
+            self.wfile.write(json.dumps(event, separators=(",", ":")).encode() + b"\n")
+            self.wfile.flush()
+

@@ -99,7 +99,6 @@ def main(argv: list[str] | None = None) -> None:
 
         from . import overlay
         from .pose_reader import read_frames, read_metadata
-        from ijson import JSONError
 
         if args.out.suffix.lower() != ".mp4":
             ap.error("overlay output must end in .mp4")

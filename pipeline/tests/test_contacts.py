@@ -268,3 +268,12 @@ def test_invalid_tuning_is_rejected(kwargs):
         detect(sequence(set()), **kwargs)
 
 
+@pytest.mark.parametrize("indices", [[-1], [1, 0], [0, 0]])
+def test_invalid_frame_order_is_rejected(indices):
+    result = clip([]).model_copy(update={
+        "frames": [Frame.model_construct(index=i, t=0, players=[]) for i in indices],
+    })
+    with pytest.raises(ValueError, match="frame indices"):
+        detect(result)
+
+

@@ -109,3 +109,9 @@ def train(paths: list[Path]) -> tuple[ContactModel, dict]:
         x = [row[1] for row in training]
         y = [row[2] for row in training]
         scaler = StandardScaler().fit(x)
+        model = LogisticRegression(class_weight="balanced", random_state=0).fit(scaler.transform(x), y)
+        return ContactModel(
+            mean=tuple(scaler.mean_), scale=tuple(scaler.scale_),
+            weight=tuple(model.coef_[0]), intercept=model.intercept_[0],
+        )
+

@@ -337,3 +337,6 @@ def test_contacts_cli_preserves_poses_and_replaces_existing_events(tmp_path, cap
     source.write_text(result.model_dump_json(), encoding="utf-8")
     main(["contacts", str(source), "-o", str(target)])
     saved = ClipResult.model_validate_json(target.read_text(encoding="utf-8"))
+    assert saved.video == result.video and saved.frames == result.frames
+    assert len(saved.contacts) == 1
+    assert "1 candidate contact events" in capsys.readouterr().out

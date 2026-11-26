@@ -121,3 +121,9 @@ def test_wrist_and_both_endpoints_need_confidence(player_index, joint, confidenc
     x, y, _ = players[player_index].keypoints[joint]
     players[player_index].keypoints[joint] = (x, y, confidence)
     assert not single(players)
+
+
+@pytest.mark.parametrize(("player_index", "joint"), [(0, 9), (1, 5), (1, 11)])
+@pytest.mark.parametrize("coordinate", [math.nan, math.inf])
+def test_nonfinite_keypoints_are_ignored(player_index, joint, coordinate):
+    players = pair()

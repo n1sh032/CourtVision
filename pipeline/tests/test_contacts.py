@@ -298,3 +298,6 @@ def test_legacy_json_and_contact_json_round_trip():
     legacy = sequence({0, 1, 2}).model_dump()
     legacy.pop("contacts")
     result = ClipResult.model_validate_json(json.dumps(legacy))
+    assert result.contacts == []
+    result.contacts = detect(result)
+    assert result.schema_version == "0.1.0"

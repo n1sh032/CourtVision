@@ -44,6 +44,12 @@ def main(argv: list[str] | None = None) -> None:
                             output.write(",")
                         output.write(frame.model_dump_json())
                         detections += len(frame.players)
+                        ids.update(player.track_id for player in frame.players)
+
+                    result = track.run(
+                        args.video, model_name=args.model, device=args.device, on_frame=write_frame,
+                    )
+                    metadata = result.model_dump_json(exclude={"frames"})
         except (OSError, ValueError) as exc:
             ap.error(str(exc))
         print(f"Writing {args.out}...", file=sys.stderr, flush=True)

@@ -130,3 +130,7 @@ def serve(
 
     with ThreadingHTTPServer(("127.0.0.1", port), Handler) as server:
         print(f"Open http://127.0.0.1:{server.server_port} to run CourtVision.", flush=True)
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            pass

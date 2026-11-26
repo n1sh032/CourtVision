@@ -49,3 +49,9 @@ def point_segment_distance(point: Point, start: Point, end: Point) -> float:
         point[0] - (start[0] + fraction * dx),
         point[1] - (start[1] + fraction * dy),
     )
+
+
+def _valid_box(player: PlayerFrame) -> bool:
+    x1, y1, x2, y2 = player.bbox
+    return all(math.isfinite(v) for v in player.bbox) and x2 > x1 and y2 > y1
+

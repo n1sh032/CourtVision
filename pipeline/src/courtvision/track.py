@@ -82,3 +82,6 @@ def run(
                 )
             else:
                 progress = f"{processed} frames, {rate:.1f} frames/s"
+            print(progress, file=sys.stderr, flush=True)
+            last_report = now
+

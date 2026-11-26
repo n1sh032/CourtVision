@@ -94,3 +94,9 @@ def train(paths: list[Path]) -> tuple[ContactModel, dict]:
             if label.label == "unclear":
                 continue
             event = result.contacts[label.event_index]
+            key = (clip, event.track_ids, event.start_frame, event.end_frame)
+            value = int(label.label == "contact")
+            if key in samples and samples[key][1] != value:
+                raise ValueError(f"{path}: conflicting labels for the same event")
+            samples[key] = (features(result, event), value)
+

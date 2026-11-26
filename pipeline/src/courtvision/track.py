@@ -7,6 +7,7 @@ import time
 from pathlib import Path
 
 from .schema import ClipResult, Frame, PlayerFrame, VideoMeta
+from .source import fingerprint
 
 
 def run(

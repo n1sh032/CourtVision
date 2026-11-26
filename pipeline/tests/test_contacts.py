@@ -343,3 +343,6 @@ def test_contacts_cli_preserves_poses_and_replaces_existing_events(tmp_path, cap
     retuned = tmp_path / "retuned.json"
     main(["contacts", str(target), "-o", str(retuned)])
     assert len(ClipResult.model_validate_json(retuned.read_bytes()).contacts) == 1
+    assert ClipResult.model_validate_json(source.read_text()).contacts == []
+
+

@@ -23,6 +23,9 @@ def test_process_streams_readable_pose_json(tmp_path, monkeypatch):
     assert result.video.n_frames == 2
 
 
+def test_failed_process_leaves_no_output(tmp_path, monkeypatch):
+    from courtvision import track
+
 
 def test_existing_output_is_preserved(tmp_path):
     output = tmp_path / "input.mp4"

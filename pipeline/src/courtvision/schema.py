@@ -58,6 +58,7 @@ class ClipResult(BaseModel):
     schema_version: Literal["0.1.0"] = SCHEMA_VERSION
     video: VideoMeta
     frames: list[Frame]
+    contacts: list[ContactEvent] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def validate_order(self):

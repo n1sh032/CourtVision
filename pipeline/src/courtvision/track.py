@@ -52,3 +52,9 @@ def run(
         device=device,
         verbose=False,
     )
+    for i, r in enumerate(stream):
+        players: list[PlayerFrame] = []
+        if r.boxes is not None and r.boxes.id is not None and r.keypoints is not None:
+            ids = r.boxes.id.int().tolist()
+            boxes = r.boxes.xyxy.tolist()
+            kps = r.keypoints.data.tolist()

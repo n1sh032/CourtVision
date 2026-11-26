@@ -38,6 +38,12 @@ def main(argv: list[str] | None = None) -> None:
                 with temp.open("w", encoding="utf-8") as output:
                     output.write('{"frames":[')
 
+                    def write_frame(frame: Frame) -> None:
+                        nonlocal detections
+                        if frame.index:
+                            output.write(",")
+                        output.write(frame.model_dump_json())
+                        detections += len(frame.players)
         except (OSError, ValueError) as exc:
             ap.error(str(exc))
         print(f"Writing {args.out}...", file=sys.stderr, flush=True)

@@ -7,3 +7,6 @@ import math
 import subprocess
 import sys
 from pathlib import Path
+
+import pytest
+from courtvision.cli import main

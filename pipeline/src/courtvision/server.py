@@ -104,9 +104,9 @@ def serve(
                             output.write(chunk)
                             remaining -= len(chunk)
 
-                    self.send_event({"status": "Loading pose model…"})
-                    from . import track
-                    from .contact import detect, detect_for_review
+                    result = service.run(
+                        source, self.path.endswith("profile=broad"), self.send_event,
+                    )
 
                     frames = []
 

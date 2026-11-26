@@ -370,3 +370,9 @@ def test_invalid_cli_tuning_reports_error_without_writing_output(tmp_path, capsy
     assert exc.value.code == 2
     assert "distance_ratio" in capsys.readouterr().err
     assert not target.exists()
+
+
+def test_contacts_command_does_not_import_ml_packages(tmp_path: Path):
+    source, target = tmp_path / "poses.json", tmp_path / "contacts.json"
+    legacy = sequence({0, 1, 2}).model_dump()
+    legacy.pop("contacts")

@@ -49,7 +49,9 @@ def render_frames(
                 break
             if img.shape[:2] != (v.height, v.width):
                 raise ValueError("Video dimensions differ from pose JSON")
-            frame = by_index.get(i)
+            frame = next(records, None)
+            if frame is None or frame.index != i:
+                raise ValueError("Decoded frame count or order differs from pose JSON")
             if frame:
                 for p in frame.players:
                     x1, y1, x2, y2 = map(int, p.bbox)

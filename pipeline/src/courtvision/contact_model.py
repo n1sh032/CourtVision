@@ -61,3 +61,9 @@ def features(result: ClipResult, event: ContactEvent) -> Vector:
                 wrist = source.keypoints[i]
                 if not _usable(wrist, 0.3):
                     continue
+                for j, k in BODY_SEGMENTS:
+                    start, end = target.keypoints[j], target.keypoints[k]
+                    if _usable(start, 0.3) and _usable(end, 0.3):
+                        nearest = min(nearest, point_segment_distance(wrist[:2], start[:2], end[:2]) / height)
+        distances.append(nearest)
+    span = event.end_frame - event.start_frame + 1

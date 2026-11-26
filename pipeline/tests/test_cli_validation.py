@@ -19,6 +19,9 @@ def test_process_streams_readable_pose_json(tmp_path, monkeypatch):
     output = tmp_path / "pose.json"
     main(["process", "input.mp4", "-o", str(output)])
     result = ClipResult.model_validate_json(output.read_bytes())
+    assert [frame.index for frame in result.frames] == [0, 1]
+    assert result.video.n_frames == 2
+
 
 
 def test_existing_output_is_preserved(tmp_path):

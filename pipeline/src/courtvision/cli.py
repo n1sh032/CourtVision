@@ -54,9 +54,7 @@ def main(argv: list[str] | None = None) -> None:
                 temp.rename(args.out)
         except (OSError, ValueError) as exc:
             ap.error(str(exc))
-        print(f"Writing {args.out}...", file=sys.stderr, flush=True)
-        args.out.parent.mkdir(parents=True, exist_ok=True)
-        args.out.write_text(result.model_dump_json())
+        print(f"{result.video.n_frames} frames, {detections} player detections, {len(ids)} unique track IDs")
         n = sum(len(f.players) for f in result.frames)
         ids = {p.track_id for f in result.frames for p in f.players}
         print(f"{len(result.frames)} frames, {n} player detections, {len(ids)} unique track IDs")

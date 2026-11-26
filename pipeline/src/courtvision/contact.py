@@ -121,3 +121,9 @@ def detect(
     are tested, but a track pair contributes at most one hit per frame. Gaps are
     measured using frame indices, including indices absent from the input JSON.
     """
+    if not math.isfinite(distance_ratio) or distance_ratio < 0:
+        raise ValueError("distance_ratio must be finite and nonnegative")
+    if not math.isfinite(min_conf) or not 0 <= min_conf <= 1:
+        raise ValueError("min_conf must be between 0 and 1")
+    if not isinstance(min_hit_frames, int) or min_hit_frames < 1:
+        raise ValueError("min_hit_frames must be a positive integer")

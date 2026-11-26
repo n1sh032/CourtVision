@@ -367,3 +367,6 @@ def test_invalid_cli_tuning_reports_error_without_writing_output(tmp_path, capsy
     source.write_text(sequence({0, 1, 2}).model_dump_json(), encoding="utf-8")
     with pytest.raises(SystemExit) as exc:
         main(["contacts", str(source), "-o", str(target), "--distance-ratio", "-1"])
+    assert exc.value.code == 2
+    assert "distance_ratio" in capsys.readouterr().err
+    assert not target.exists()

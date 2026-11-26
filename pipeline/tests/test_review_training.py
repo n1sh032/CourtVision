@@ -10,3 +10,6 @@ def player(track, left, *, visible=True):
     if visible:
         points[5], points[6] = (left + 5, 25, 1), (left + 20, 25, 1)
         points[11], points[12] = (left + 5, 65, 1), (left + 20, 65, 1)
+        points[7] = (left + 12, 38, 1)
+    return PlayerFrame(track_id=track, bbox=(left, 0, left + 60, 100), keypoints=points)
+

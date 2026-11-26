@@ -53,6 +53,7 @@ class ContactEvent(BaseModel):
             raise ValueError("hit_frames cannot exceed the event's frame span")
         return self
 
+
 class ClipResult(BaseModel):
     schema_version: Literal["0.1.0"] = SCHEMA_VERSION
     video: VideoMeta

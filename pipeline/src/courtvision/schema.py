@@ -19,7 +19,8 @@ class VideoMeta(BaseModel):
     source_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     fps: FiniteFloat = Field(gt=0)
     width: int = Field(gt=0)
-    n_frames: int
+    height: int = Field(gt=0)
+    n_frames: int = Field(ge=0)
 
 
 class PlayerFrame(BaseModel):

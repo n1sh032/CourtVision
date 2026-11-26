@@ -16,3 +16,9 @@ ASSETS = {
     "/viewer.js": ("viewer.js", "text/javascript"),
 }
 
+
+def serve(
+    viewer: Path, port: int, model: str, device: str | None, contact_model: Path | None = None,
+) -> None:
+    if not all((viewer / name).is_file() for name, _ in ASSETS.values()):
+        raise ValueError(f"Viewer files not found in {viewer}. Run from the repository root.")

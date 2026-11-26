@@ -121,3 +121,6 @@ def train(paths: list[Path]) -> tuple[ContactModel, dict]:
         if {y for _, _, y in training} != {0, 1}:
             raise ValueError("Label both classes across multiple clips so held-out clips can be evaluated")
         model = fit(training)
+        for clip, x, y in rows:
+            if clip == holdout:
+                key = (("tn", "fp"), ("fn", "tp"))[y][model.accepts(x)]

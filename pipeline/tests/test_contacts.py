@@ -364,3 +364,6 @@ def test_each_cli_threshold_can_retune_saved_json(tmp_path, options):
 
 def test_invalid_cli_tuning_reports_error_without_writing_output(tmp_path, capsys):
     source, target = tmp_path / "poses.json", tmp_path / "contacts.json"
+    source.write_text(sequence({0, 1, 2}).model_dump_json(), encoding="utf-8")
+    with pytest.raises(SystemExit) as exc:
+        main(["contacts", str(source), "-o", str(target), "--distance-ratio", "-1"])

@@ -52,3 +52,5 @@ def test_exported_reviews_train_with_clip_holdouts(tmp_path):
         path.write_text(review.model_dump_json(), encoding="utf-8")
         paths.append(path)
     model, report = train(paths)
+    assert report == {"clips": 2, "labels": 4, "tp": 2, "fp": 0, "tn": 2, "fn": 0}
+    assert ContactModel.model_validate_json(model.model_dump_json()) == model

@@ -31,3 +31,21 @@ def test_strict_review_uses_pose_evidence_and_duration():
     assert not detect_for_review(clip("occluded.mp4", 10, visible=False))
     (candidate,) = detect_for_review(clip("visible.mp4", 10))
     assert candidate.hit_frames == 10
+
+
+def test_exported_reviews_train_with_clip_holdouts(tmp_path):
+    pytest.importorskip("sklearn")
+    paths = []
+    for name in ("clip-a.mp4", "clip-b.mp4"):
+        result = clip(name, 12)
+        result.contacts = [
+            ContactEvent(track_ids=(1, 2), start_frame=0, end_frame=2,
+                         start_t=0, end_t=2 / 30, hit_frames=3),
+            ContactEvent(track_ids=(1, 2), start_frame=3, end_frame=11,
+                         start_t=3 / 30, end_t=11 / 30, hit_frames=9),
+        ]
+        review = Review(version=1, result=result, labels=[
+            Label(event_index=0, label="no_contact"),
+            Label(event_index=1, label="contact"),
+        ])
+        path = tmp_path / f"{name}.json"

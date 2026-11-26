@@ -41,6 +41,12 @@ class ContactEvent(BaseModel):
     end_frame: int = Field(ge=0)
     start_t: FiniteFloat = Field(ge=0)
     end_t: FiniteFloat = Field(ge=0)
+    hit_frames: int = Field(ge=1)
+
+    @model_validator(mode="after")
+    def validate_interval(self) -> ContactEvent:
+        if self.track_ids[0] >= self.track_ids[1]:
+            raise ValueError("track_ids must be distinct and in ascending order")
 class ClipResult(BaseModel):
     schema_version: Literal["0.1.0"] = SCHEMA_VERSION
     video: VideoMeta

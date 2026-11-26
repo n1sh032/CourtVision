@@ -25,7 +25,7 @@ class VideoMeta(BaseModel):
 
 class PlayerFrame(BaseModel):
     track_id: int
-    bbox: tuple[float, float, float, float]
+    bbox: tuple[FiniteFloat, FiniteFloat, FiniteFloat, FiniteFloat]
     keypoints: list[Keypoint] = Field(min_length=17, max_length=17)
 
 

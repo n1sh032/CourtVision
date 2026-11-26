@@ -35,6 +35,9 @@ def main(argv: list[str] | None = None) -> None:
             args.out.parent.mkdir(parents=True, exist_ok=True)
             with TemporaryDirectory(dir=args.out.parent) as folder:
                 temp = Path(folder) / "pose.json"
+                with temp.open("w", encoding="utf-8") as output:
+                    output.write('{"frames":[')
+
         except (OSError, ValueError) as exc:
             ap.error(str(exc))
         print(f"Writing {args.out}...", file=sys.stderr, flush=True)

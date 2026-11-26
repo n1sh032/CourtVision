@@ -22,6 +22,7 @@ def run(
     video_path = Path(video_path)
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
+        cap.release()
         raise FileNotFoundError(f"Cannot open video: {video_path}")
     fps = cap.get(cv2.CAP_PROP_FPS)
     if not math.isfinite(fps) or fps <= 0:

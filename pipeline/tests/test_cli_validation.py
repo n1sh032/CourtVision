@@ -4,6 +4,12 @@ from courtvision.cli import main
 from courtvision.schema import ClipResult, Frame, VideoMeta
 
 
+def test_overlay_reads_pose_records_in_order(tmp_path, monkeypatch):
+    from courtvision import overlay
+
+    frames = [Frame(index=index, t=index / 30, players=[]) for index in range(2)]
+
+
 def test_process_streams_readable_pose_json(tmp_path, monkeypatch):
     from courtvision import track
 

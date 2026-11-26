@@ -85,3 +85,9 @@ def _wrist_near_body(
             if point_segment_distance(wrist[:2], start[:2], end[:2]) <= threshold:
                 return True
     return False
+
+
+def _reviewable_pair(a: PlayerFrame, b: PlayerFrame, min_conf: float) -> bool:
+    heights = [p.bbox[3] - p.bbox[1] for p in (a, b)]
+    if min(heights) / max(heights) < 0.6:
+        return False

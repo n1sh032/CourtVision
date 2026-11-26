@@ -76,3 +76,9 @@ def features(result: ClipResult, event: ContactEvent) -> Vector:
     )
 
 
+def train(paths: list[Path]) -> tuple[ContactModel, dict]:
+    try:
+        from sklearn.linear_model import LogisticRegression
+        from sklearn.preprocessing import StandardScaler
+    except ImportError as exc:
+        raise ValueError('Install training dependencies with pip install -e "./pipeline[train]"') from exc

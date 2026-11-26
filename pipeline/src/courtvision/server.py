@@ -34,3 +34,6 @@ def serve(
             asset = ASSETS.get(self.path)
             if not asset:
                 self.send_error(404)
+                return
+            name, media_type = asset
+            content = (viewer / name).read_bytes()

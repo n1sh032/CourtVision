@@ -82,3 +82,6 @@ def test_distance_scales_with_target_height_not_wrist_owner():
     players = pair(10)
     players[0].bbox = (0, 0, 50, 1000)
     assert not single(players)  # target height 100: threshold 8, not 80
+    players[1].bbox = (50, 0, 100, 200)
+    assert len(single(players)) == 1  # target height 200: threshold 16
+

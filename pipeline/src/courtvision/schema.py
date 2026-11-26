@@ -16,3 +16,6 @@ class VideoMeta(BaseModel):
     source: str
     fps: float
     width: int
+    height: int
+    n_frames: int
+

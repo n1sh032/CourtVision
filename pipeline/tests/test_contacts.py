@@ -175,3 +175,6 @@ def test_same_track_id_never_contacts_itself():
     players[1].track_id = players[0].track_id
     assert not single(players)
 
+
+def test_consecutive_hits_have_inclusive_frame_and_time_bounds():
+    (event,) = detect(sequence({10, 11, 12}))

@@ -23,6 +23,9 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("json", type=Path)
     p.add_argument("-o", "--out", type=Path, required=True)
 
+    p = sub.add_parser("contacts", help="find contact candidates in saved pose JSON")
+    p.add_argument("json", type=Path)
+    p.add_argument("-o", "--out", type=Path, required=True)
     args = ap.parse_args(argv)
     if args.out.exists() or args.out.is_symlink():
         ap.error(f"output already exists: {args.out}")

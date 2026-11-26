@@ -107,19 +107,6 @@ def serve(
                     result = service.run(
                         source, self.path.endswith("profile=broad"), self.send_event,
                     )
-                    result.frames = frames
-                    self.send_event({"status": "Finding contact candidates…"})
-                    if self.path.endswith("profile=broad"):
-                        result.contacts = detect(result)
-                    elif classifier is None:
-                        result.contacts = detect_for_review(result)
-                    else:
-                        from .contact_model import features
-
-                        result.contacts = [
-                            event for event in detect(result)
-                            if classifier.accepts(features(result, event))
-                        ]
                     self.wfile.write(
                         b'{"result":' + result.model_dump_json().encode() + b"}\n"
                     )

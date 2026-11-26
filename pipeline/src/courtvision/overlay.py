@@ -21,6 +21,7 @@ def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> 
     v = result.video
     if not math.isfinite(v.fps) or v.fps <= 0 or min(v.width, v.height) <= 0:
         raise ValueError("Invalid video metadata in pose JSON")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     cap = cv2.VideoCapture(str(video_path))
     v = result.video
     writer = cv2.VideoWriter(

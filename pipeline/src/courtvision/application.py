@@ -34,3 +34,4 @@ class DetectionService:
                 event for event in detect(result)
                 if self.classifier.accepts(features(result, event))
             ]
+        return result

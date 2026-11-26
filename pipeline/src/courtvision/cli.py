@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from .schema import ClipResult, Frame
+from .schema import Frame
 
 
 def main(argv: list[str] | None = None) -> None:

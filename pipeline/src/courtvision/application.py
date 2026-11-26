@@ -16,3 +16,6 @@ class DetectionService:
 
         def on_frame(frame):
             frames.append(frame)
+            if frame.index == 0 or frame.index % 15 == 0:
+                progress({"status": f"Processed {frame.index + 1} frames…"})
+

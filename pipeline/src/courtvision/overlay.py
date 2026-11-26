@@ -26,7 +26,6 @@ def render_frames(
     video_path, out_path = Path(video_path), Path(out_path)
     if not video_path.is_file() or out_path.exists() or out_path.suffix.lower() != ".mp4":
         raise ValueError("Overlay needs an existing input file and a new .mp4 output")
-    v = result.video
     if v.source_sha256 and fingerprint(video_path) != v.source_sha256:
         raise ValueError("Input video does not match the pose JSON source")
     if not math.isfinite(v.fps) or v.fps <= 0 or min(v.width, v.height) <= 0:

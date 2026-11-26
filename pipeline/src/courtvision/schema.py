@@ -63,8 +63,10 @@ class ClipResult(BaseModel):
     @model_validator(mode="after")
     def validate_order(self):
         previous_time = 0.0
-        for index, frame in enumerate(self.frames):
-            if frame.index != index or frame.t < previous_time:
-                raise ValueError("Frame indices must be consecutive and times nondecreasing")
+        previous_index = -1
+        for frame in self.frames:
+            if frame.index <= previous_index or frame.t < previous_time:
+                raise ValueError("Frame indices must increase and times must be nondecreasing")
+            previous_index = frame.index
             previous_time = frame.t
         return self

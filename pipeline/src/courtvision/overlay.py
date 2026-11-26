@@ -5,6 +5,7 @@ import math
 from pathlib import Path
 
 from .schema import ClipResult
+from .source import fingerprint
 
 SKELETON = [
     (5, 6), (5, 7), (7, 9), (6, 8), (8, 10), (5, 11), (6, 12), (11, 12),

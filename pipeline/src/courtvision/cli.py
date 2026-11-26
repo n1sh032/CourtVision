@@ -24,6 +24,8 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("-o", "--out", type=Path, required=True)
 
     args = ap.parse_args(argv)
+    if args.out.exists() or args.out.is_symlink():
+        ap.error(f"output already exists: {args.out}")
 
     if args.cmd == "process":
         from . import track

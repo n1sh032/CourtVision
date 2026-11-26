@@ -115,3 +115,6 @@ def train(paths: list[Path]) -> tuple[ContactModel, dict]:
             weight=tuple(model.coef_[0]), intercept=model.intercept_[0],
         )
 
+    report = {"clips": len(clips), "labels": len(rows), "tp": 0, "fp": 0, "tn": 0, "fn": 0}
+    for holdout in clips:
+        training = [row for row in rows if row[0] != holdout]

@@ -25,3 +25,6 @@ def clip(name, annotated_frames, *, target_left=42, visible=True):
     )
 
 
+def test_strict_review_uses_pose_evidence_and_duration():
+    assert detect(clip("short.mp4", 3))
+    assert not detect_for_review(clip("short.mp4", 3))

@@ -127,3 +127,6 @@ def detect(
         raise ValueError("min_conf must be between 0 and 1")
     if not isinstance(min_hit_frames, int) or min_hit_frames < 1:
         raise ValueError("min_hit_frames must be a positive integer")
+    if not isinstance(max_gap_frames, int) or max_gap_frames < 0:
+        raise ValueError("max_gap_frames must be a nonnegative integer")
+

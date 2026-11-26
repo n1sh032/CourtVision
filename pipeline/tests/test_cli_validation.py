@@ -28,6 +28,9 @@ def test_failed_process_leaves_no_output(tmp_path, monkeypatch):
 
     def run(*args, on_frame, **kwargs):
         on_frame(Frame(index=0, t=0, players=[]))
+        raise ValueError("failed to decode video")
+
+    monkeypatch.setattr(track, "run", run)
 
 
 def test_existing_output_is_preserved(tmp_path):

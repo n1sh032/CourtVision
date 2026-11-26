@@ -76,7 +76,9 @@ def run(
                         keypoints=[tuple(p) for p in kp],
                     )
                 )
-        frames.append(Frame(index=i, t=i / fps, players=players))
+        frame = Frame(index=i, t=i / fps, players=players)
+        if on_frame is None:
+            frames.append(frame)
         now = time.perf_counter()
         processed = i + 1
         if processed == 1 or now - last_report >= 5 or processed == n_frames:

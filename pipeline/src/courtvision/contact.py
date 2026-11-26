@@ -61,3 +61,6 @@ def _boxes_touch(a: PlayerFrame, b: PlayerFrame) -> bool:
     bx1, by1, bx2, by2 = b.bbox
     return ax1 <= bx2 and ax2 >= bx1 and ay1 <= by2 and ay2 >= by1
 
+
+def _usable(keypoint: Keypoint, min_conf: float) -> bool:
+    return all(math.isfinite(v) for v in keypoint) and min_conf < keypoint[2] <= 1.0

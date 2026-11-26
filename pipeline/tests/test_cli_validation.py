@@ -26,6 +26,9 @@ def test_process_streams_readable_pose_json(tmp_path, monkeypatch):
 def test_failed_process_leaves_no_output(tmp_path, monkeypatch):
     from courtvision import track
 
+    def run(*args, on_frame, **kwargs):
+        on_frame(Frame(index=0, t=0, players=[]))
+
 
 def test_existing_output_is_preserved(tmp_path):
     output = tmp_path / "input.mp4"

@@ -5,7 +5,7 @@ import math
 from collections.abc import Iterable
 from pathlib import Path
 
-from .schema import ClipResult
+from .schema import ClipResult, Frame, VideoMeta
 from .source import fingerprint
 
 SKELETON = [

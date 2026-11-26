@@ -91,3 +91,6 @@ def train(paths: list[Path]) -> tuple[ContactModel, dict]:
         for label in review.labels:
             if label.event_index >= len(result.contacts):
                 raise ValueError(f"{path}: label points to an event that does not exist")
+            if label.label == "unclear":
+                continue
+            event = result.contacts[label.event_index]

@@ -208,3 +208,9 @@ def test_short_flickers_are_removed_by_actual_hit_count():
     assert not detect(sequence({0, 3}))  # span is four frames but only two hits
     assert not detect(sequence({0}))
     assert detect(sequence({0}), min_hit_frames=1)[0].hit_frames == 1
+
+
+def test_empty_frames_and_single_players_have_no_events():
+    assert not detect(sequence(set()))
+    assert not detect(sequence(set(), [0, 1, 2]))
+    assert not single(pair()[:1])

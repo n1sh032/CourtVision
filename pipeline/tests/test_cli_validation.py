@@ -23,6 +23,8 @@ def test_overlay_reads_pose_records_in_order(tmp_path, monkeypatch):
         out_path.write_bytes(b"video")
 
     monkeypatch.setattr(overlay, "render_frames", render)
+    main(["overlay", "input.mp4", str(pose), "-o", str(output)])
+    assert output.read_bytes() == b"video"
 
 
 def test_process_streams_readable_pose_json(tmp_path, monkeypatch):

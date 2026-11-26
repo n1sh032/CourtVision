@@ -73,7 +73,7 @@ def main(argv: list[str] | None = None) -> None:
                 finally:
                     frames.close()
                 temp.rename(args.out)
-        except (OSError, ValueError) as exc:
+        except (OSError, ValueError, JSONError) as exc:
             ap.error(str(exc))
         print(f"wrote {args.out}")
 

@@ -52,3 +52,6 @@ def features(result: ClipResult, event: ContactEvent) -> Vector:
         players = {p.track_id: p for p in frame.players if _valid_box(p)}
         if track_a not in players or track_b not in players:
             continue
+        a, b = players[track_a], players[track_b]
+        ha, hb = a.bbox[3] - a.bbox[1], b.bbox[3] - b.bbox[1]
+        height_ratios.append(min(ha, hb) / max(ha, hb))

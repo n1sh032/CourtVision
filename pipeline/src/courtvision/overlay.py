@@ -37,3 +37,6 @@ def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> 
                     if min(ca, cb) > 0.3:
                         cv2.line(img, (int(xa), int(ya)), (int(xb), int(yb)), (0, 200, 0), 2)
         writer.write(img)
+        i += 1
+    cap.release()
+    writer.release()

@@ -23,7 +23,9 @@ def render(video_path: str | Path, result: ClipResult, out_path: str | Path) -> 
         raise ValueError("Invalid video metadata in pose JSON")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     cap = cv2.VideoCapture(str(video_path))
-    v = result.video
+    if not cap.isOpened():
+        cap.release()
+        raise ValueError(f"Cannot open video: {video_path}")
     writer = cv2.VideoWriter(
         str(out_path), cv2.VideoWriter_fourcc(*"mp4v"), v.fps, (v.width, v.height)
     )

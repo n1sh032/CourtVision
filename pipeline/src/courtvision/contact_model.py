@@ -88,3 +88,6 @@ def train(paths: list[Path]) -> tuple[ContactModel, dict]:
         review = Review.model_validate_json(path.read_bytes())
         result = review.result
         clip = result.video.source_sha256 or result.video.source
+        for label in review.labels:
+            if label.event_index >= len(result.contacts):
+                raise ValueError(f"{path}: label points to an event that does not exist")

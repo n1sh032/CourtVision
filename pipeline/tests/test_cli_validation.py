@@ -14,6 +14,12 @@ def test_overlay_reads_pose_records_in_order(tmp_path, monkeypatch):
     )
     pose = tmp_path / "pose.json"
     pose.write_text(result.model_dump_json(), encoding="utf-8")
+    output = tmp_path / "output.mp4"
+
+    def render(video_path, metadata, records, out_path):
+        assert metadata == result.video
+        assert iter(records) is records
+        assert list(records) == frames
 
 
 def test_process_streams_readable_pose_json(tmp_path, monkeypatch):

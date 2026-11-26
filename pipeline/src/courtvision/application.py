@@ -7,3 +7,6 @@ class DetectionService:
         self.model = model
         self.device = device
         self.classifier = classifier
+
+    def run(self, source: Path, broad: bool, progress):
+        from . import track

@@ -40,3 +40,6 @@ class ContactModel(BaseModel):
         ) >= 0
 
 
+def features(result: ClipResult, event: ContactEvent) -> Vector:
+    distances = []
+    height_ratios = []

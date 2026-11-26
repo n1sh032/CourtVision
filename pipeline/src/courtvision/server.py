@@ -49,3 +49,6 @@ def serve(
                 return
             origin = self.headers.get("Origin")
             expected = f"http://127.0.0.1:{self.server.server_port}"
+            if origin != expected or self.headers.get("Host") != expected.removeprefix("http://"):
+                self.send_error(403, "Open the viewer using the address printed by CourtVision")
+                return
